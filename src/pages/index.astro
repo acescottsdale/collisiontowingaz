@@ -1,0 +1,31 @@
+---
+import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import Services from "@/components/Services";
+import CostCalculator from "@/components/CostCalculator";
+import About from "@/components/About";
+import Testimonials from "@/components/Testimonials";
+import FAQ from "@/components/FAQ";
+import Contact from "@/components/Contact";
+import Footer from "@/components/Footer";
+import Layout from "@/layouts/Layout.astro";
+
+// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
+// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+---
+
+<Layout>
+  <div
+    class="min-h-screen overflow-hidden bg-[radial-gradient(1200px_600px_at_10%_-10%,hsl(221_72%_28%/.05),transparent),radial-gradient(800px_400px_at_110%_10%,hsl(258_84%_60%/.06),transparent)] dark:bg-[radial-gradient(1200px_600px_at_10%_-10%,hsl(221_72%_66%/.08),transparent),radial-gradient(800px_400px_at_110%_10%,hsl(258_84%_70%/.08),transparent)]"
+  >
+    <Header client:only />
+    <Hero client:load />
+    <Services client:load />
+    <CostCalculator client:load />
+    <About client:load />
+    <Testimonials client:load />
+    <FAQ client:load />
+    <Contact client:load />
+    <Footer client:load />
+  </div>
+</Layout>
