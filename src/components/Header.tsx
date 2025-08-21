@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Phone, Menu, X } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import FindVehicleModal from "@/components/FindVehicleModal";
 import logo from "@/assets/images/logo.png";
 
 const NAV_ITEMS = [
@@ -112,6 +113,12 @@ const Header = () => {
               </nav>
               <div className="flex items-center space-x-2">
                 <ThemeToggle />
+                <FindVehicleModal 
+                  variant="outline" 
+                  size="sm"
+                  className="border-2 border-primary-foreground/30 dark:border-white/30 bg-primary-foreground/10 dark:bg-white/10 text-primary-foreground dark:text-white hover:bg-primary-foreground dark:hover:bg-white hover:text-primary transition-all duration-300 max-w-max text-xs sm:text-sm md:text-base px-2 py-0.5 sm:px-4 sm:py-2"
+                  showIcon={false}
+                />
                 <Button
                   variant="default"
                   asChild
@@ -213,6 +220,10 @@ const Header = () => {
           >
             <a href="tel:6232538345">Call Now</a>
           </Button>
+          <FindVehicleModal 
+            variant="outline"
+            className="border-2 border-primary hover:bg-transparent hover:text-primary"
+          />
           <div className="mt-2">
             <ThemeToggle />
           </div>
