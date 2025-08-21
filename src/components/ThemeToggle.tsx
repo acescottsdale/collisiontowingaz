@@ -33,30 +33,21 @@ export default function ThemeToggle() {
         <Button
           variant="outline"
           size="icon"
-          className="bg-transparent rounded-full border-none group"
+          className="bg-transparent rounded-full border-none"
         >
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90 text-white group-hover:text-primary" />
+          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90 text-white" />
           <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onClick={() => setThemeState("theme-light")}
-          className="hover:!text-primary"
-        >
+        <DropdownMenuItem onClick={() => setThemeState("theme-light")}>
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setThemeState("dark")}
-          className="hover:!text-primary"
-        >
+        <DropdownMenuItem onClick={() => setThemeState("dark")}>
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setThemeState("system")}
-          className="hover:!text-primary"
-        >
+        <DropdownMenuItem onClick={() => setThemeState("system")}>
           System
         </DropdownMenuItem>
       </DropdownMenuContent>

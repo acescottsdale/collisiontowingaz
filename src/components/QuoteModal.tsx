@@ -20,6 +20,8 @@ interface QuoteModalProps {
   vehicleYear: string;
   vehicleMake: string;
   vehicleModel: string;
+  vehiclePlate: string;
+  vehicleRegistrationState: string;
 }
 
 const QuoteModal: React.FC<QuoteModalProps> = ({
@@ -30,6 +32,8 @@ const QuoteModal: React.FC<QuoteModalProps> = ({
   vehicleYear,
   vehicleMake,
   vehicleModel,
+  vehiclePlate,
+  vehicleRegistrationState,
 }) => {
   const [formName, setFormName] = useState("");
   const [formPhone, setFormPhone] = useState("");
@@ -108,6 +112,16 @@ const QuoteModal: React.FC<QuoteModalProps> = ({
               <div>
                 <Label>Vehicle Model</Label>
                 <Input value={vehicleModel} readOnly />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>Plate #</Label>
+                <Input value={vehiclePlate} readOnly />
+              </div>
+              <div>
+                <Label>Registration State</Label>
+                <Input value={vehicleRegistrationState} readOnly />
               </div>
             </div>
             <div>

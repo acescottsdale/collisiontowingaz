@@ -68,6 +68,8 @@ function CostCalculator() {
   const [vehicleYear, setVehicleYear] = useState("");
   const [vehicleMake, setVehicleMake] = useState("");
   const [vehicleModel, setVehicleModel] = useState("");
+  const [vehiclePlate, setVehiclePlate] = useState("");
+  const [vehicleRegistrationState, setVehicleRegistrationState] = useState("");
   const [fromSuggestions, setFromSuggestions] = useState<AddressSuggestion[]>(
     [],
   );
@@ -574,6 +576,26 @@ function CostCalculator() {
                       />
                     </div>
                   </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Input
+                        id="vehiclePlate"
+                        placeholder="Plate #"
+                        value={vehiclePlate}
+                        onChange={(e) => setVehiclePlate(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        id="vehicleRegistrationState"
+                        placeholder="Registration State"
+                        value={vehicleRegistrationState}
+                        onChange={(e) =>
+                          setVehicleRegistrationState(e.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
               {/* Right column: Only from/to address input */}
@@ -855,6 +877,8 @@ function CostCalculator() {
               vehicleYear={vehicleYear}
               vehicleMake={vehicleMake}
               vehicleModel={vehicleModel}
+              vehiclePlate={vehiclePlate}
+              vehicleRegistrationState={vehicleRegistrationState}
             />
           </CardFooter>
         </Card>
