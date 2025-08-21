@@ -69,11 +69,11 @@ function CostCalculator() {
   const [vehicleMake, setVehicleMake] = useState("");
   const [vehicleModel, setVehicleModel] = useState("");
   const [fromSuggestions, setFromSuggestions] = useState<AddressSuggestion[]>(
-    []
+    [],
   );
   const [toSuggestions, setToSuggestions] = useState<AddressSuggestion[]>([]);
   const [fromSelected, setFromSelected] = useState<AddressSuggestion | null>(
-    null
+    null,
   );
   const [toSelected, setToSelected] = useState<AddressSuggestion | null>(null);
   const [isVeteran, setIsVeteran] = useState(false);
@@ -82,7 +82,7 @@ function CostCalculator() {
   const [miles, setMiles] = useState<string>("");
   const [fuelCost, setFuelCost] = useState<string>("");
   const [lockOption, setLockOption] = useState<"standard" | "complex">(
-    "standard"
+    "standard",
   );
   // Removed geoBusy, geoError, hasSavedLocation
   // Only use from/to address for distance input
@@ -118,7 +118,7 @@ function CostCalculator() {
             navigator.geolocation.clearWatch(watchId);
             reject(err);
           },
-          opts
+          opts,
         );
         // Safety timeout for watch
         const timeoutMs = (opts.timeout ?? 20000) + 2000;
@@ -149,7 +149,7 @@ function CostCalculator() {
         (e as { code: number }).code === 1
       ) {
         const permErr: Error & { code?: number } = new Error(
-          "Permission denied"
+          "Permission denied",
         );
         permErr.code = 1;
         throw permErr;
@@ -210,7 +210,7 @@ function CostCalculator() {
         }) as Promise<{ state: string }> | undefined);
         if (perm && perm.state === "denied") {
           throw new Error(
-            "Location permission is denied. Please enable location access for this site in your browser settings and try again."
+            "Location permission is denied. Please enable location access for this site in your browser settings and try again.",
           );
         }
       } catch (_err) {
@@ -307,7 +307,7 @@ function CostCalculator() {
     if (!address.trim()) return null;
     try {
       const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
-        address
+        address,
       )}`;
       const response = await fetch(url);
       const json = await response.json();
@@ -322,7 +322,7 @@ function CostCalculator() {
 
   function debounce<T extends (...args: unknown[]) => void>(
     fn: T,
-    wait: number
+    wait: number,
   ) {
     let t: number | undefined;
     return (...args: Parameters<T>) => {
@@ -340,7 +340,7 @@ function CostCalculator() {
         ? trimmed
         : `${trimmed}, AZ`;
       const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=us&accept-language=en&q=${encodeURIComponent(
-        biased
+        biased,
       )}`;
       try {
         const res = await fetch(url);
@@ -356,7 +356,7 @@ function CostCalculator() {
         return [];
       }
     },
-    []
+    [],
   );
 
   const debouncedFromFetch = useMemo(
@@ -365,7 +365,7 @@ function CostCalculator() {
         const results = await fetchAddressSuggestions(q);
         setFromSuggestions(results);
       }, 300),
-    [fetchAddressSuggestions]
+    [fetchAddressSuggestions],
   );
 
   const debouncedToFetch = useMemo(
@@ -374,7 +374,7 @@ function CostCalculator() {
         const results = await fetchAddressSuggestions(q);
         setToSuggestions(results);
       }, 300),
-    [fetchAddressSuggestions]
+    [fetchAddressSuggestions],
   );
 
   function handleFromInputChange(value: string) {
@@ -422,7 +422,7 @@ function CostCalculator() {
         from = fromSelected.coords;
       if (!from) {
         const exact = fromSuggestions.find(
-          (s) => s.label === fromAddress
+          (s) => s.label === fromAddress,
         )?.coords;
         from = exact ?? (await geocode(fromAddress));
       }
@@ -431,7 +431,7 @@ function CostCalculator() {
       if (toSelected && toSelected.label === toAddress) to = toSelected.coords;
       if (!to) {
         const exactTo = toSuggestions.find(
-          (s) => s.label === toAddress
+          (s) => s.label === toAddress,
         )?.coords;
         to = exactTo ?? (await geocode(toAddress));
       }
@@ -455,7 +455,7 @@ function CostCalculator() {
     >
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-10">
-          <h2 className="text-4xl font-extrabold mb-3 bg-gradient-hero bg-clip-text text-transparent tracking-tight">
+          <h2 className="text-4xl font-extrabold mb-3 bg-[image:_var(--gradient-hero)] bg-clip-text text-transparent tracking-tight">
             Cost Calculator
           </h2>
           <div className="h-1 w-24 mx-auto rounded-full bg-gradient-to-r from-primary to-primary/50 mb-3" />

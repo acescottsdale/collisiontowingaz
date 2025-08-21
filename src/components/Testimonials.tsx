@@ -111,7 +111,7 @@ const Testimonials = () => {
     <section id="testimonials" className="py-20 bg-muted/20 dark:bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-extrabold mb-4 bg-gradient-hero bg-clip-text text-transparent tracking-tight">
+          <h2 className="text-4xl font-extrabold mb-4 bg-[image:_var(--gradient-hero)] bg-clip-text text-transparent tracking-tight">
             What Our Customers Say
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">

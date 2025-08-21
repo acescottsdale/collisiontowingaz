@@ -47,7 +47,7 @@ const About = () => {
           <div className="order-1 lg:order-2">
             <h2 className="text-4xl font-bold mb-6">
               A Little Care for Your{" "}
-              <span className="bg-gradient-hero bg-clip-text text-transparent">
+              <span className="bg-[image:_var(--gradient-hero)] bg-clip-text text-transparent">
                 Great Problems
               </span>
             </h2>
