@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css";
+import { Font } from "astro:assets";
 ---
 
 <script is:inline>
@@ -33,6 +34,8 @@ import "@/styles/global.css";
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="generator" content={Astro.generator} />
     <title>Astro Basics</title>
+
+    <Font cssVariable="--font-inter" preload />
   </head>
   <body>
     <main>

@@ -62,7 +62,7 @@ const Services = () => {
     >
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-extrabold mb-3 bg-gradient-hero bg-clip-text text-transparent tracking-tight">
+          <h2 className="text-4xl font-extrabold mb-3 bg-[image:_var(--gradient-hero)] bg-clip-text text-transparent tracking-tight">
             Our Services
           </h2>
           <div className="h-1 w-24 mx-auto rounded-full bg-gradient-to-r from-primary to-primary/50 mb-4" />
