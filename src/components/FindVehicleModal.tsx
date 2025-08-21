@@ -18,11 +18,11 @@ interface FindVehicleModalProps {
   showIcon?: boolean;
 }
 
-const FindVehicleModal = ({ 
-  variant = "default", 
-  size = "default", 
+const FindVehicleModal = ({
+  variant = "default",
+  size = "default",
   className = "",
-  showIcon = true 
+  showIcon = true,
 }: FindVehicleModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,7 +32,11 @@ const FindVehicleModal = ({
   };
 
   const openInNewTab = () => {
-    window.open("https://ct288750.towbook.net/", "_blank", "noopener,noreferrer");
+    window.open(
+      "https://ct288750.towbook.net/",
+      "_blank",
+      "noopener,noreferrer",
+    );
   };
 
   return (
@@ -43,7 +47,7 @@ const FindVehicleModal = ({
           Find Your Vehicle
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[95vw] w-full h-[85vh] sm:h-[90vh] p-0 flex flex-col overflow-hidden">
+      <DialogContent className="max-w-[95vw] w-full h-[85vh] sm:h-[90vh] p-0 flex flex-col overflow-hidden z-[100]">
         <DialogHeader className="px-4 py-3 border-b">
           <DialogTitle className="flex items-center gap-2 text-lg">
             <Car className="h-5 w-5 text-primary" />
@@ -64,7 +68,9 @@ const FindVehicleModal = ({
             <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10">
               <div className="flex flex-col items-center gap-2">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                <p className="text-sm text-muted-foreground">Loading vehicle finder...</p>
+                <p className="text-sm text-muted-foreground">
+                  Loading vehicle finder...
+                </p>
               </div>
             </div>
           )}
