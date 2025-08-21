@@ -144,7 +144,7 @@ const Testimonials = () => {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-semibold text-foreground leading-tight">
+                            <p className="font-semibold text-foreground leading-[1]">
                               {testimonial.name}
                             </p>
                             <p className="text-xs text-muted-foreground">

@@ -20,13 +20,13 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 pb-20 pt-28 h-full flex flex-col justify-end">
         <div className="max-w-3xl">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 leading-tight drop-shadow-md">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 leading-[1] drop-shadow-md">
             Stranded?
             <span className="block text-secondary">We'll Get You Back</span>
             on the Road
           </h1>
 
-          <p className="text-lg md:text-xl text-white/90 mb-10 leading-relaxed max-w-2xl">
+          <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl">
             Fast, professional towing and roadside assistance across the Phoenix
             metro area. No hidden fees, just reliable service you can trust.
           </p>
@@ -39,7 +39,7 @@ const Hero = () => {
               className="text-lg px-8 hover:bg-transparent border-2 border-secondary hover:text-secondary backdrop-blur-md shadow-elevated"
             >
               <a href="#quote" className="flex items-center">
-                <span>Get free quote</span>
+                <span>Get Free Quote</span>
               </a>
             </Button>
             <Button
