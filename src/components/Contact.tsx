@@ -197,13 +197,6 @@ const Contact = () => {
                         <Phone className="h-4 w-4" /> Call now
                       </a>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      asChild
-                      className="gap-2 w-full sm:w-auto hover:bg-primary hover:text-white"
-                    >
-                      <a href="sms:6232538345">Send SMS</a>
-                    </Button>
                   </div>
                 </form>
               </Form>
