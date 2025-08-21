@@ -1,7 +1,13 @@
 type LngLat = [number, number];
-const HOOK_FEE_USD = 140;
+const HOOK_FEE_USD = 110;
 const PER_MILE_RATE_USD = 6;
-const JUMP_START_USD = 60;
+const PER_MILE_RATE_LARGE_VEHICLE_USD = 7;
+const LOCKOUT_BASE_USD = 85;
+const LOCKOUT_PER_MILE_USD = 2;
+const FUEL_DELIVERY_BASE_USD = 85;
+const FUEL_DELIVERY_PER_MILE_USD = 2;
+const JUMP_START_BASE_USD = 85;
+const JUMP_START_PER_MILE_USD = 2;
 const VETERAN_DISCOUNT = 0.1;
 const STUDENT_DISCOUNT = 0.08;
 
@@ -25,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -35,8 +42,6 @@ import {
 } from "@/components/ui/dialog";
 
 import QuoteModal from "@/components/QuoteModal";
-
-const FUEL_DELIVERY_BASE_USD = 50;
 
 type ServiceType = "towing" | "fuel" | "lockout" | "jumpstart";
 
@@ -70,6 +75,7 @@ function CostCalculator() {
   const [vehicleModel, setVehicleModel] = useState("");
   const [vehiclePlate, setVehiclePlate] = useState("");
   const [vehicleRegistrationState, setVehicleRegistrationState] = useState("");
+  const [isLargeVehicle, setIsLargeVehicle] = useState(false);
   const [fromSuggestions, setFromSuggestions] = useState<AddressSuggestion[]>(
     [],
   );
@@ -82,10 +88,8 @@ function CostCalculator() {
   const [isStudent, setIsStudent] = useState(false);
   const [service, setService] = useState<ServiceType>("towing");
   const [miles, setMiles] = useState<string>("");
-  const [fuelCost, setFuelCost] = useState<string>("");
-  const [lockOption, setLockOption] = useState<"standard" | "complex">(
-    "standard",
-  );
+  // Remove fuelCost state since we're removing fuel input options
+  // const [fuelCost, setFuelCost] = useState<string>("");
   // Removed geoBusy, geoError, hasSavedLocation
   // Only use from/to address for distance input
   const [distanceMode] = useState<"address">("address");
@@ -259,26 +263,48 @@ function CostCalculator() {
     }
   }
 
-  useEffect(() => {}, [service, miles, fuelCost, lockOption]);
+  useEffect(() => {}, [service, miles, isLargeVehicle]);
 
   const towingCost = useMemo(() => {
     const m = Math.max(0, Number(miles) || 0);
-    return HOOK_FEE_USD + PER_MILE_RATE_USD * m;
-  }, [miles]);
+    const perMileRate = isLargeVehicle ? PER_MILE_RATE_LARGE_VEHICLE_USD : PER_MILE_RATE_USD;
+    return HOOK_FEE_USD + perMileRate * m;
+  }, [miles, isLargeVehicle]);
 
   const fuelDeliveryCost = useMemo(() => {
-    const fc = Math.max(0, Number(fuelCost) || 0);
-    return FUEL_DELIVERY_BASE_USD + fc;
-  }, [fuelCost]);
+    const m = Math.max(0, Number(miles) || 0);
+    return FUEL_DELIVERY_BASE_USD + FUEL_DELIVERY_PER_MILE_USD * m;
+  }, [miles]);
 
   const lockoutCost = useMemo(() => {
-    return lockOption === "standard" ? 50 : 100;
-  }, [lockOption]);
+    const m = Math.max(0, Number(miles) || 0);
+    return LOCKOUT_BASE_USD + LOCKOUT_PER_MILE_USD * m;
+  }, [miles]);
+
+  const jumpStartCost = useMemo(() => {
+    const m = Math.max(0, Number(miles) || 0);
+    return JUMP_START_BASE_USD + JUMP_START_PER_MILE_USD * m;
+  }, [miles]);
 
   const perMileCost = useMemo(() => {
     const m = Math.max(0, Number(miles) || 0);
-    return PER_MILE_RATE_USD * m;
-  }, [miles]);
+    switch (service) {
+      case "towing":
+        const perMileRate = isLargeVehicle ? PER_MILE_RATE_LARGE_VEHICLE_USD : PER_MILE_RATE_USD;
+        return perMileRate * m;
+      case "fuel":
+        // For fuel delivery, large vehicles could have a higher rate if needed
+        return FUEL_DELIVERY_PER_MILE_USD * m;
+      case "lockout":
+        // For lockout, large vehicles could have a higher rate if needed  
+        return LOCKOUT_PER_MILE_USD * m;
+      case "jumpstart":
+        // For jump start, large vehicles could have a higher rate if needed
+        return JUMP_START_PER_MILE_USD * m;
+      default:
+        return 0;
+    }
+  }, [miles, service, isLargeVehicle]);
 
   // Calculate total before discount
   const baseTotal = useMemo(() => {
@@ -286,15 +312,15 @@ function CostCalculator() {
       case "towing":
         return towingCost;
       case "fuel":
-        return fuelDeliveryCost + perMileCost;
+        return fuelDeliveryCost;
       case "lockout":
-        return lockoutCost + perMileCost;
+        return lockoutCost;
       case "jumpstart":
-        return JUMP_START_USD + perMileCost;
+        return jumpStartCost;
       default:
         return 0;
     }
-  }, [service, towingCost, fuelDeliveryCost, lockoutCost, perMileCost]);
+  }, [service, towingCost, fuelDeliveryCost, lockoutCost, jumpStartCost]);
 
   // Apply discounts
   const total = useMemo(() => {
@@ -322,7 +348,7 @@ function CostCalculator() {
     }
   }
 
-  function debounce<T extends (...args: unknown[]) => void>(
+  function debounce<T extends (...args: any[]) => void>(
     fn: T,
     wait: number,
   ) {
@@ -473,8 +499,7 @@ function CostCalculator() {
             </CardTitle>
             <CardDescription>
               Towing: {currency(HOOK_FEE_USD)} hook fee +{" "}
-              {currency(PER_MILE_RATE_USD)} per mile. Other services shown
-              below.
+              {currency(PER_MILE_RATE_USD)} per mile ({currency(PER_MILE_RATE_LARGE_VEHICLE_USD)} for large vehicles). Other services: {currency(LOCKOUT_BASE_USD)} base + {currency(LOCKOUT_PER_MILE_USD)}/mile.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6">
@@ -500,51 +525,24 @@ function CostCalculator() {
                     </SelectContent>
                   </Select>
                 </div>
-                {service === "fuel" && (
-                  <div className="space-y-2 ">
-                    <Label
-                      htmlFor="fuelCost"
-                      className="flex items-center gap-2"
-                    >
-                      <Fuel className="h-4 w-4 text-primary" /> Fuel cost
-                      (estimate)
+                {/* Large vehicle option - applies to all services */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="large-vehicle" className="text-sm font-medium">
+                      Large vehicle (truck, SUV, van)
                     </Label>
-                    <Input
-                      id="fuelCost"
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      placeholder="e.g. 20.00"
-                      value={fuelCost}
-                      onChange={(e) => setFuelCost(e.target.value)}
+                    <Switch
+                      id="large-vehicle"
+                      checked={isLargeVehicle}
+                      onCheckedChange={setIsLargeVehicle}
                     />
                   </div>
-                )}
-                {service === "lockout" && (
-                  <div className="space-y-2 ">
-                    <Label
-                      htmlFor="lockOption"
-                      className="flex items-center gap-2"
-                    >
-                      <Lock className="h-4 w-4 text-primary" /> Lock-out
-                      complexity
-                    </Label>
-                    <Select
-                      value={lockOption}
-                      onValueChange={(v: "standard" | "complex") =>
-                        setLockOption(v)
-                      }
-                    >
-                      <SelectTrigger id="lockOption">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="standard">Standard - $50</SelectItem>
-                        <SelectItem value="complex">Complex - $100</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
+                  {isLargeVehicle && (
+                    <p className="text-xs text-muted-foreground">
+                      Higher rates apply for large vehicles
+                    </p>
+                  )}
+                </div>
                 {/* Vehicle type fields */}
                 <div className=" space-y-2">
                   <Label className="block font-medium">Vehicle Type</Label>
@@ -709,29 +707,32 @@ function CostCalculator() {
                 {calcError && (
                   <p className="text-sm text-destructive">{calcError}</p>
                 )}
-                {/* Discount checkboxes */}
-                <div className="flex flex-col gap-2 relative">
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
+                {/* Discount options */}
+                <div className="flex flex-col gap-3 relative">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="veteran-discount" className="text-sm font-medium">
+                      Veteran discount (10%)
+                    </Label>
+                    <Switch
+                      id="veteran-discount"
                       checked={isVeteran}
-                      onChange={(e) => setIsVeteran(e.target.checked)}
+                      onCheckedChange={setIsVeteran}
                     />
-                    Veteran (must show valid ID at service)
-                  </label>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="student-discount" className="text-sm font-medium">
+                      Student discount (8%)
+                    </Label>
+                    <Switch
+                      id="student-discount"
                       checked={isStudent}
-                      onChange={(e) => setIsStudent(e.target.checked)}
+                      onCheckedChange={setIsStudent}
                     />
-                    College Student (must show valid student ID)
-                  </label>
+                  </div>
                   {(isVeteran || isStudent) && (
-                    <span className="text-xs text-muted-foreground">
-                      Discount will be applied to your quote. Valid ID required
-                      at time of service.
-                    </span>
+                    <p className="text-xs text-muted-foreground">
+                      Discount will be applied to your quote. Valid ID required at time of service.
+                    </p>
                   )}
                 </div>
               </div>
@@ -748,34 +749,9 @@ function CostCalculator() {
                     <span>{currency(HOOK_FEE_USD)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span>Per mile × {Math.max(0, Number(miles) || 0)}</span>
+                    <span>Per mile × {Math.max(0, Number(miles) || 0)} {isLargeVehicle ? "(large vehicle)" : ""}</span>
                     <span>
-                      {currency(PER_MILE_RATE_USD)} ×{" "}
-                      {Math.max(0, Number(miles) || 0)}
-                    </span>
-                  </div>
-                  <div className="h-px bg-border my-2" />
-                  <div className="flex items-center justify-between font-semibold">
-                    <span>Estimated total</span>
-                    <span>{currency(towingCost)}</span>
-                  </div>
-                </div>
-              )}
-
-              {service === "fuel" && (
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Service fee</span>
-                    <span>{currency(FUEL_DELIVERY_BASE_USD)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Fuel cost</span>
-                    <span>{currency(Math.max(0, Number(fuelCost) || 0))}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Per mile × {Math.max(0, Number(miles) || 0)}</span>
-                    <span>
-                      {currency(PER_MILE_RATE_USD)} ×{" "}
+                      {currency(isLargeVehicle ? PER_MILE_RATE_LARGE_VEHICLE_USD : PER_MILE_RATE_USD)} ×{" "}
                       {Math.max(0, Number(miles) || 0)}
                     </span>
                   </div>
@@ -796,30 +772,73 @@ function CostCalculator() {
                 </div>
               )}
 
-              {service === "lockout" && (
+              {service === "fuel" && (
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-sm">
-                    <span>
-                      Lock-out (
-                      {lockOption === "standard" ? "Standard" : "Complex"})
-                    </span>
-                    <span>{currency(lockoutCost)}</span>
+                    <span>Service fee</span>
+                    <span>{currency(FUEL_DELIVERY_BASE_USD)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span>Per mile × {Math.max(0, Number(miles) || 0)}</span>
                     <span>
-                      {currency(PER_MILE_RATE_USD)} ×{" "}
+                      {currency(FUEL_DELIVERY_PER_MILE_USD)} ×{" "}
                       {Math.max(0, Number(miles) || 0)}
                     </span>
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    Typical range $50–$100
-                  </div>
+                  {isLargeVehicle && (
+                    <div className="text-xs text-muted-foreground">
+                      Large vehicle surcharge may apply
+                    </div>
+                  )}
                   <div className="h-px bg-border my-2" />
                   <div className="flex items-center justify-between font-semibold">
                     <span>Estimated total</span>
                     <span>{currency(total)}</span>
                   </div>
+                  {(isVeteran || isStudent) && (
+                    <div className="flex items-center justify-between text-xs text-green-700 dark:text-green-400">
+                      <span>Discount applied</span>
+                      <span>
+                        -{isVeteran ? "10% " : ""}
+                        {isStudent ? "8%" : ""}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {service === "lockout" && (
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Lock-out service</span>
+                    <span>{currency(LOCKOUT_BASE_USD)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Per mile × {Math.max(0, Number(miles) || 0)}</span>
+                    <span>
+                      {currency(LOCKOUT_PER_MILE_USD)} ×{" "}
+                      {Math.max(0, Number(miles) || 0)}
+                    </span>
+                  </div>
+                  {isLargeVehicle && (
+                    <div className="text-xs text-muted-foreground">
+                      Large vehicle surcharge may apply
+                    </div>
+                  )}
+                  <div className="h-px bg-border my-2" />
+                  <div className="flex items-center justify-between font-semibold">
+                    <span>Estimated total</span>
+                    <span>{currency(total)}</span>
+                  </div>
+                  {(isVeteran || isStudent) && (
+                    <div className="flex items-center justify-between text-xs text-green-700 dark:text-green-400">
+                      <span>Discount applied</span>
+                      <span>
+                        -{isVeteran ? "10% " : ""}
+                        {isStudent ? "8%" : ""}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -827,20 +846,34 @@ function CostCalculator() {
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-sm">
                     <span>Jump start</span>
-                    <span>{currency(JUMP_START_USD)}</span>
+                    <span>{currency(JUMP_START_BASE_USD)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span>Per mile × {Math.max(0, Number(miles) || 0)}</span>
                     <span>
-                      {currency(PER_MILE_RATE_USD)} ×{" "}
+                      {currency(JUMP_START_PER_MILE_USD)} ×{" "}
                       {Math.max(0, Number(miles) || 0)}
                     </span>
                   </div>
+                  {isLargeVehicle && (
+                    <div className="text-xs text-muted-foreground">
+                      Large vehicle surcharge may apply
+                    </div>
+                  )}
                   <div className="h-px bg-border my-2" />
                   <div className="flex items-center justify-between font-semibold">
                     <span>Estimated total</span>
                     <span>{currency(total)}</span>
                   </div>
+                  {(isVeteran || isStudent) && (
+                    <div className="flex items-center justify-between text-xs text-green-700 dark:text-green-400">
+                      <span>Discount applied</span>
+                      <span>
+                        -{isVeteran ? "10% " : ""}
+                        {isStudent ? "8%" : ""}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
