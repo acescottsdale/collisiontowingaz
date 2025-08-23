@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 import { Play, X } from "lucide-react";
 import ad1 from "@/assets/images/ad1.mp4";
 import ad2 from "@/assets/images/ad2.mp4";
@@ -13,11 +14,20 @@ import img3 from "@/assets/images/img3.jpg";
 // Media items configuration
 const mediaItems = [
   {
+    id: 4,
+    type: "video",
+    src: ad2,
+    // No thumbnail - will use video as thumbnail
+    alt: "Ad Variation #2 ASU",
+    className: "col-span-full md:row-span-3",
+  },
+  {
     id: 1,
     type: "image",
     src: img1.src,
     alt: "Tow Truck #1",
-    className: "col-span-2 row-span-2",
+    className:
+      "col-span-full aspect-[4/3] md:aspect-auto md:col-span-2 md:row-span-3",
   },
   {
     id: 2,
@@ -25,45 +35,38 @@ const mediaItems = [
     src: ad1,
     thumbnail: img1.src, // Optional thumbnail
     alt: "Ad Variation #1 ASU",
-    className: "col-span-1 row-span-1",
+    className: "col-span-full md:col-span-1 md:row-span-1",
   },
   {
     id: 3,
     type: "image",
     src: img2.src,
     alt: "Wide Shot Tow Truck #2",
-    className: "col-span-1 row-span-1",
-  },
-  {
-    id: 4,
-    type: "video",
-    src: ad2,
-    // No thumbnail - will use video as thumbnail
-    alt: "Ad Variation #2 ASU",
-    className: "col-span-1 row-span-2",
-  },
-  {
-    id: 5,
-    type: "image",
-    src: img3.src,
-    alt: "Wide Shot Tow Truck #3",
-    className: "col-span-2 row-span-1",
+    className: "col-span-full md:col-span-1 md:row-span-2",
   },
   {
     id: 6,
+    type: "image",
+    src: img3.src,
+    alt: "Wide Shot Tow Truck #3",
+    className: "col-span-full md:col-span-2 md:row-span-3",
+  },
+  {
+    id: 5,
     type: "video",
     src: ad3,
     // No thumbnail - will use video as thumbnail
     alt: "Ad Variation #3 Collision Auto Body Shop",
-    className: "col-span-1 row-span-1",
+    className: "col-span-full md:col-span-1 md:row-span-3",
   },
+
   {
     id: 7,
     type: "video",
     src: ad4,
     // No thumbnail - will use video as thumbnail
     alt: "Ad Variation #4 Collision Auto Body Shop",
-    className: "col-span-1 row-span-1",
+    className: "col-span-full md:col-span-1 md:row-span-3",
   },
 ];
 
@@ -75,7 +78,9 @@ interface MediaItemProps {
 const MediaItem: React.FC<MediaItemProps> = ({ item, onClick }) => {
   return (
     <div
-      className={`group relative overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${item.className}`}
+      className={cn(
+        `group relative overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${item.className}`,
+      )}
       onClick={onClick}
     >
       {item.type === "image" ? (
@@ -128,7 +133,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className={`${item.type === "image" ? "max-w-[80vw] w-[80vw] h-[80vh]" : "max-w-4xl w-full"} p-0 overflow-hidden`}
+        className={`${item.type === "image" ? "max-w-[80vw] min-w-[80vw] h-[50vh] md:h-[80vh]" : "max-w-4xl w-full"} p-0 overflow-hidden`}
       >
         <div className="relative h-full">
           <button
@@ -184,7 +189,7 @@ const Gallery: React.FC = () => {
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-primary dark:text-white mb-4">
             Our Work in Action
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
@@ -195,7 +200,7 @@ const Gallery: React.FC = () => {
         </div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-4 auto-rows-[minmax(150px,1fr)] gap-4 max-h-[600px] md:max-h-[700px] lg:max-h-[800px]">
+        <div className="grid grid-cols-1 md:grid-cols-4 md:auto-rows-[minmax(150px,1fr)] gap-4">
           {mediaItems.map((item) => (
             <MediaItem
               key={item.id}
