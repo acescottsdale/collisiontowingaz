@@ -1,6 +1,7 @@
 ---
 import "@/styles/global.css";
 import { Font } from "astro:assets";
+import { Toaster } from "@/components/ui/sonner";
 
 export interface Props {
   title?: string;
@@ -268,5 +269,7 @@ const finalStructuredData = structuredData || structuredDataDefaults;
     <main>
       <slot />
     </main>
+
+    <Toaster client:load />
   </body>
 </html>

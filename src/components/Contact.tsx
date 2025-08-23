@@ -71,13 +71,41 @@ const Contact = () => {
 
   const { toast } = useToast();
 
-  const onSubmit = (values: z.infer<typeof schema>) => {
-    toast({
-      title: "Request received",
-      description:
-        "Thanks! Our dispatcher will reach out shortly. For urgent help, call now.",
-    });
-    form.reset();
+  const onSubmit = async (values: z.infer<typeof schema>) => {
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Request received",
+          description:
+            "Thanks! Our dispatcher will reach out shortly. For urgent help, call now.",
+        });
+        form.reset();
+      } else {
+        toast({
+          title: "Error",
+          description:
+            result.message ||
+            "Failed to send request. Please try again or call us directly.",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to submit contact form:", error);
+      toast({
+        title: "Error",
+        description:
+          "Failed to send request. Please try again or call us directly.",
+      });
+    }
   };
 
   return (
