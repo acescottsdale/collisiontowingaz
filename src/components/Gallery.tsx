@@ -20,14 +20,14 @@ const mediaItems = [
     src: ad2,
     // No thumbnail - will use video as thumbnail
     alt: "Ad Variation #2 ASU",
-    className: " md:row-span-3",
+    className: "md:row-span-3",
   },
   {
     id: 1,
     type: "image",
     src: img1.src,
     alt: "Tow Truck #1",
-    className: " md:col-span-2 md:row-span-3",
+    className: "md:col-span-2 md:row-span-3",
   },
   {
     id: 2,
@@ -42,14 +42,14 @@ const mediaItems = [
     type: "image",
     src: img2.src,
     alt: "Wide Shot Tow Truck #2",
-    className: " md:col-span-1 md:row-span-2",
+    className: "md:col-span-1 md:row-span-2",
   },
   {
     id: 6,
     type: "image",
     src: img3.src,
     alt: "Wide Shot Tow Truck #3",
-    className: " md:col-span-2 md:row-span-3",
+    className: "md:col-span-2 md:row-span-3",
   },
   {
     id: 5,
@@ -57,7 +57,7 @@ const mediaItems = [
     src: ad3,
     // No thumbnail - will use video as thumbnail
     alt: "Ad Variation #3 Collision Auto Body Shop",
-    className: " md:col-span-1 md:row-span-3",
+    className: "md:col-span-1 md:row-span-3",
   },
 
   {
@@ -66,7 +66,7 @@ const mediaItems = [
     src: ad4,
     // No thumbnail - will use video as thumbnail
     alt: "Ad Variation #4 Collision Auto Body Shop",
-    className: " md:col-span-1 md:row-span-3",
+    className: "md:col-span-1 md:row-span-3",
   },
 ];
 
