@@ -10,6 +10,7 @@ import ad4 from "@/assets/images/ad4.mp4";
 import img1 from "@/assets/images/img1.jpg";
 import img2 from "@/assets/images/img2.jpg";
 import img3 from "@/assets/images/img3.jpg";
+import { it } from "zod/v4/locales";
 
 // Media items configuration
 const mediaItems = [
@@ -19,15 +20,14 @@ const mediaItems = [
     src: ad2,
     // No thumbnail - will use video as thumbnail
     alt: "Ad Variation #2 ASU",
-    className: "col-span-full md:row-span-3",
+    className: " md:row-span-3",
   },
   {
     id: 1,
     type: "image",
     src: img1.src,
     alt: "Tow Truck #1",
-    className:
-      "col-span-full aspect-[4/3] md:aspect-auto md:col-span-2 md:row-span-3",
+    className: " md:col-span-2 md:row-span-3",
   },
   {
     id: 2,
@@ -35,21 +35,21 @@ const mediaItems = [
     src: ad1,
     thumbnail: img1.src, // Optional thumbnail
     alt: "Ad Variation #1 ASU",
-    className: "col-span-full md:col-span-1 md:row-span-1",
+    className: "md:col-span-1 md:row-span-1",
   },
   {
     id: 3,
     type: "image",
     src: img2.src,
     alt: "Wide Shot Tow Truck #2",
-    className: "col-span-full md:col-span-1 md:row-span-2",
+    className: " md:col-span-1 md:row-span-2",
   },
   {
     id: 6,
     type: "image",
     src: img3.src,
     alt: "Wide Shot Tow Truck #3",
-    className: "col-span-full md:col-span-2 md:row-span-3",
+    className: " md:col-span-2 md:row-span-3",
   },
   {
     id: 5,
@@ -57,7 +57,7 @@ const mediaItems = [
     src: ad3,
     // No thumbnail - will use video as thumbnail
     alt: "Ad Variation #3 Collision Auto Body Shop",
-    className: "col-span-full md:col-span-1 md:row-span-3",
+    className: " md:col-span-1 md:row-span-3",
   },
 
   {
@@ -66,7 +66,7 @@ const mediaItems = [
     src: ad4,
     // No thumbnail - will use video as thumbnail
     alt: "Ad Variation #4 Collision Auto Body Shop",
-    className: "col-span-full md:col-span-1 md:row-span-3",
+    className: " md:col-span-1 md:row-span-3",
   },
 ];
 
@@ -79,7 +79,8 @@ const MediaItem: React.FC<MediaItemProps> = ({ item, onClick }) => {
   return (
     <div
       className={cn(
-        `group relative overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${item.className}`,
+        `group relative overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl`,
+        item.className,
       )}
       onClick={onClick}
     >
