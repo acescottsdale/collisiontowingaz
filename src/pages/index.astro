@@ -11,11 +11,19 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import Layout from "@/layouts/Layout.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const seoData = {
+  title:
+    "Collision Towing AZ - 24/7 Emergency Towing & Roadside Assistance in Phoenix",
+  description:
+    "Professional 24/7 towing and roadside assistance in Phoenix, Arizona. Fast response times, competitive rates, and expert service for accidents, breakdowns, and emergencies. Call now for immediate help!",
+  keywords:
+    "towing service Phoenix, roadside assistance Arizona, emergency towing Phoenix, accident recovery, flatbed towing, Phoenix tow truck, 24/7 towing Arizona, vehicle recovery Phoenix, collision towing, breakdown assistance",
+  ogImage: "/hero-towing.jpg",
+  canonicalUrl: "https://collisiontowingaz.com/",
+};
 ---
 
-<Layout>
+<Layout {...seoData}>
   <div
     class="min-h-screen overflow-hidden bg-[radial-gradient(1200px_600px_at_10%_-10%,hsl(221_72%_28%/.05),transparent),radial-gradient(800px_400px_at_110%_10%,hsl(258_84%_60%/.06),transparent)] dark:bg-[radial-gradient(1200px_600px_at_10%_-10%,hsl(221_72%_66%/.08),transparent),radial-gradient(800px_400px_at_110%_10%,hsl(258_84%_70%/.08),transparent)]"
   >
