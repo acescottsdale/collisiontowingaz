@@ -137,8 +137,8 @@ const LocationButton: React.FC = () => {
       );
 
     if (isMobile) {
-      // On mobile, use SMS protocol
-      window.open(`sms:?body=${encodedMessage}`, "_self");
+      // On mobile, use SMS protocol with phone number
+      window.open(`sms:+16232538345?body=${encodedMessage}`, "_self");
     } else {
       // On desktop, copy to clipboard and show instructions
       copyToClipboard(message);
