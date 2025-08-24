@@ -163,7 +163,7 @@ const LocationButton: React.FC = () => {
       <div className="location-button-fixed">
         <Button
           onClick={handleButtonClick}
-          className={`h-14 w-14 rounded-full bg-primary shadow-lg hover:bg-primary/80 hover:shadow-xl transition-all duration-200 group ${showPulse ? "location-button-pulse" : ""}`}
+          className={`h-14 w-14 rounded-full bg-secondary/80 shadow-lg hover:bg-secondary hover:shadow-xl transition-all duration-200 group ${showPulse ? "location-button-pulse" : ""}`}
           size="lg"
           aria-label="Get current location"
           title="Get your current location to share with towing service"
