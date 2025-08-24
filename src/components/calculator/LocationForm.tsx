@@ -4,7 +4,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { LocationInfo, AddressSuggestion, LngLat } from "./types";
-import { debounce, getCoordsWithFallbacks, geocode, haversineMiles } from "./utils";
+import {
+  debounce,
+  getCoordsWithFallbacks,
+  geocode,
+  haversineMiles,
+} from "./utils";
 import { SUGGESTED_REPAIR_SHOP } from "./constants";
 
 interface LocationFormProps {
@@ -13,12 +18,14 @@ interface LocationFormProps {
   onDistanceCalculated: (miles: string) => void;
 }
 
-const LocationForm: React.FC<LocationFormProps> = ({ 
-  locationInfo, 
+const LocationForm: React.FC<LocationFormProps> = ({
+  locationInfo,
   onLocationInfoChange,
-  onDistanceCalculated 
+  onDistanceCalculated,
 }) => {
-  const [fromSuggestions, setFromSuggestions] = useState<AddressSuggestion[]>([]);
+  const [fromSuggestions, setFromSuggestions] = useState<AddressSuggestion[]>(
+    [],
+  );
   const [toSuggestions, setToSuggestions] = useState<AddressSuggestion[]>([]);
   const [calcBusy, setCalcBusy] = useState(false);
   const [calcError, setCalcError] = useState("");
@@ -117,9 +124,9 @@ const LocationForm: React.FC<LocationFormProps> = ({
       const res = await fetch(url);
       const data = await res.json();
       const address = data.display_name || `${coords[1]}, ${coords[0]}`;
-      onLocationInfoChange({ 
-        fromAddress: address, 
-        fromSelected: { label: address, coords } 
+      onLocationInfoChange({
+        fromAddress: address,
+        fromSelected: { label: address, coords },
       });
       setFromSuggestions([]);
     } catch (e) {
@@ -153,12 +160,15 @@ const LocationForm: React.FC<LocationFormProps> = ({
   }
 
   async function handleSuggestShop() {
-    onLocationInfoChange({ toAddress: SUGGESTED_REPAIR_SHOP, toSelected: null });
+    onLocationInfoChange({
+      toAddress: SUGGESTED_REPAIR_SHOP,
+      toSelected: null,
+    });
     // Pre-resolve coords for better success rate
     const coords = await geocode(SUGGESTED_REPAIR_SHOP);
     if (coords) {
-      onLocationInfoChange({ 
-        toSelected: { label: SUGGESTED_REPAIR_SHOP, coords } 
+      onLocationInfoChange({
+        toSelected: { label: SUGGESTED_REPAIR_SHOP, coords },
       });
     }
   }
@@ -169,9 +179,12 @@ const LocationForm: React.FC<LocationFormProps> = ({
     try {
       let from: LngLat | null = null;
       let to: LngLat | null = null;
-      
+
       // Prefer selected suggestions' coords when available and matching the input
-      if (locationInfo.fromSelected && locationInfo.fromSelected.label === locationInfo.fromAddress)
+      if (
+        locationInfo.fromSelected &&
+        locationInfo.fromSelected.label === locationInfo.fromAddress
+      )
         from = locationInfo.fromSelected.coords;
       if (!from) {
         const exact = fromSuggestions.find(
@@ -181,7 +194,10 @@ const LocationForm: React.FC<LocationFormProps> = ({
       }
       if (!from) throw new Error("Could not find location for from address.");
 
-      if (locationInfo.toSelected && locationInfo.toSelected.label === locationInfo.toAddress) 
+      if (
+        locationInfo.toSelected &&
+        locationInfo.toSelected.label === locationInfo.toAddress
+      )
         to = locationInfo.toSelected.coords;
       if (!to) {
         const exactTo = toSuggestions.find(
@@ -190,7 +206,7 @@ const LocationForm: React.FC<LocationFormProps> = ({
         to = exactTo ?? (await geocode(locationInfo.toAddress));
       }
       if (!to) throw new Error("Could not find location for to address.");
-      
+
       const dist = haversineMiles(from, to);
       const miles = dist.toFixed(2);
       onLocationInfoChange({ miles });
@@ -205,10 +221,10 @@ const LocationForm: React.FC<LocationFormProps> = ({
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Location Information</h3>
-      
+
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="fromAddress">From Address</Label>
+          <Label htmlFor="fromAddress">From address (pickup location)</Label>
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <Input
@@ -249,7 +265,7 @@ const LocationForm: React.FC<LocationFormProps> = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="toAddress">To Address</Label>
+          <Label htmlFor="toAddress">To address (dropoff location)</Label>
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <Input
@@ -300,13 +316,17 @@ const LocationForm: React.FC<LocationFormProps> = ({
           <Button
             type="button"
             onClick={handleCalculateDistance}
-            disabled={calcBusy || !locationInfo.fromAddress.trim() || !locationInfo.toAddress.trim()}
+            disabled={
+              calcBusy ||
+              !locationInfo.fromAddress.trim() ||
+              !locationInfo.toAddress.trim()
+            }
             className="mb-0"
           >
             {calcBusy ? "Calculating..." : "Calculate"}
           </Button>
         </div>
-        
+
         {calcError && (
           <div className="text-destructive text-sm">{calcError}</div>
         )}
