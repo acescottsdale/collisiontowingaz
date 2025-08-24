@@ -5,7 +5,13 @@ import { z } from "zod";
 export const prerender = false;
 
 // Initialize Resend with API key from environment variables
-const resend = new Resend(import.meta.env.RESEND_API_KEY);
+const getResendInstance = () => {
+  const apiKey = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY environment variable is not set");
+  }
+  return new Resend(apiKey);
+};
 
 // Validation schema for contact form
 const contactSchema = z.object({
@@ -49,8 +55,8 @@ export const POST: APIRoute = async ({ request }) => {
     const { name, phone, email, message } = validationResult.data;
 
     // Check if required environment variables are set
-    const notificationEmail = import.meta.env.NOTIFICATION_EMAIL;
-    const resendApiKey = import.meta.env.RESEND_API_KEY;
+    const notificationEmail = import.meta.env.NOTIFICATION_EMAIL || process.env.NOTIFICATION_EMAIL;
+    const resendApiKey = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
 
     if (!notificationEmail || !resendApiKey) {
       console.error(
@@ -69,6 +75,9 @@ export const POST: APIRoute = async ({ request }) => {
         },
       );
     }
+
+    // Get Resend instance
+    const resend = getResendInstance();
 
     // Format the current date and time
     const now = new Date();
