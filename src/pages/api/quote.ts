@@ -1,12 +1,17 @@
 import type { APIRoute } from "astro";
 import { Resend } from "resend";
 import { z } from "zod";
+import { RESEND_API_KEY, NOTIFICATION_EMAIL } from "astro:env/server";
 
 export const prerender = false;
 
 // Initialize Resend with API key from environment variables
-const getResendInstance = () => {
-  const apiKey = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
+const getResendInstance = ({ locals }: { locals: any }) => {
+  const apiKey =
+    locals?.runtime?.env?.RESEND_API_KEY ||
+    RESEND_API_KEY ||
+    import.meta.env.RESEND_API_KEY ||
+    process.env.RESEND_API_KEY;
   if (!apiKey) {
     throw new Error("RESEND_API_KEY environment variable is not set");
   }
@@ -61,7 +66,7 @@ const quoteSchema = z.object({
     .optional(),
 });
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Parse the request body
     const body = await request.json();
@@ -88,8 +93,16 @@ export const POST: APIRoute = async ({ request }) => {
     const data = validationResult.data;
 
     // Check if required environment variables are set
-    const notificationEmail = import.meta.env.NOTIFICATION_EMAIL || process.env.NOTIFICATION_EMAIL;
-    const resendApiKey = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
+    const notificationEmail =
+      (locals as any)?.runtime?.env?.NOTIFICATION_EMAIL ||
+      NOTIFICATION_EMAIL ||
+      import.meta.env.NOTIFICATION_EMAIL ||
+      process.env.NOTIFICATION_EMAIL;
+    const resendApiKey =
+      (locals as any)?.runtime?.env?.RESEND_API_KEY ||
+      RESEND_API_KEY ||
+      import.meta.env.RESEND_API_KEY ||
+      process.env.RESEND_API_KEY;
 
     if (!notificationEmail || !resendApiKey) {
       console.error(
@@ -110,7 +123,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Get Resend instance
-    const resend = getResendInstance();
+    const resend = getResendInstance({ locals });
 
     // Format the current date and time
     const now = new Date();
