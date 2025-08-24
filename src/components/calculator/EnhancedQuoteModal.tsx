@@ -33,42 +33,49 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   const [formError, setFormError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Location sharing states
-  const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [locationError, setLocationError] = useState("");
   const [gettingLocation, setGettingLocation] = useState(false);
 
   // Check if distance has been calculated (required for quote submission)
-  const isDistanceCalculated = quoteData.miles && parseFloat(quoteData.miles) > 0;
+  const isDistanceCalculated =
+    quoteData.miles && parseFloat(quoteData.miles) > 0;
 
   // Location sharing function
   async function handleShareLocation() {
     setLocationError("");
     setGettingLocation(true);
-    
+
     try {
       if (!navigator.geolocation) {
         throw new Error("Geolocation is not supported by your browser.");
       }
 
       const coords = await getCoordsWithFallbacks();
-      
+
       setCurrentLocation({
         lat: coords[1],
-        lng: coords[0]
+        lng: coords[0],
       });
-      
+
       // Update the message field with location info
       const locationText = `📍 My exact location: https://maps.google.com/?q=${coords[1]},${coords[0]}`;
-      setMessage(prev => prev ? `${prev}\n\n${locationText}` : locationText);
-      
+      setMessage((prev) =>
+        prev ? `${prev}\n\n${locationText}` : locationText,
+      );
     } catch (error) {
-      let message = "Could not get your location. Please ensure location access is enabled.";
+      let message =
+        "Could not get your location. Please ensure location access is enabled.";
       if (error instanceof GeolocationPositionError) {
         switch (error.code) {
           case 1:
-            message = "Location access denied. Please enable location permissions and try again.";
+            message =
+              "Location access denied. Please enable location permissions and try again.";
             break;
           case 2:
             message = "Location unavailable. Please try again.";
@@ -87,7 +94,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
-    
+
     // Validation
     if (!customerName.trim() || !customerPhone.trim()) {
       setFormError("Please enter your name and phone number.");
@@ -95,7 +102,9 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
     }
 
     if (!isDistanceCalculated) {
-      setFormError("Please calculate the distance first using the 'Calculate' button.");
+      setFormError(
+        "Please calculate the distance first using the 'Calculate' button.",
+      );
       return;
     }
 
@@ -108,13 +117,13 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
         customerPhone: customerPhone.trim(),
         customerEmail: customerEmail.trim() || undefined,
         message: message.trim() || undefined,
-        
+
         // Service and location info
         service: quoteData.service,
         fromAddress: quoteData.fromAddress,
         toAddress: quoteData.toAddress,
         miles: quoteData.miles,
-        
+
         // Vehicle info
         vehicleYear: quoteData.year,
         vehicleMake: quoteData.make,
@@ -122,21 +131,23 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
         vehiclePlate: quoteData.plate,
         vehicleRegistrationState: quoteData.registrationState,
         isLargeVehicle: quoteData.isLarge,
-        
+
         // Discounts
         isVeteran: quoteData.isVeteran,
         isStudent: quoteData.isStudent,
-        
+
         // Calculated cost
         estimatedTotal: quoteData.estimatedTotal,
-        
+
         // Optional GPS location
-        location: currentLocation ? {
-          latitude: currentLocation.lat,
-          longitude: currentLocation.lng,
-          googleMapsLink: `https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lng}`,
-          accuracy: "GPS coordinates shared by customer"
-        } : undefined,
+        location: currentLocation
+          ? {
+              latitude: currentLocation.lat,
+              longitude: currentLocation.lng,
+              googleMapsLink: `https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lng}`,
+              accuracy: "GPS coordinates shared by customer",
+            }
+          : undefined,
       };
 
       const response = await fetch("/api/quote", {
@@ -193,18 +204,19 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
               Please fill out your details to complete your quote request.
               {!isDistanceCalculated && (
                 <span className="text-destructive block mt-2">
-                  ⚠️ Please calculate the distance first before submitting your quote.
+                  ⚠️ Please calculate the distance first before submitting your
+                  quote.
                 </span>
               )}
             </DialogDescription>
           </DialogHeader>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
+
+          <form onSubmit={handleSubmit} className="space-y-4 ">
             {/* Customer Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Contact Information</h3>
-              
-              <div className="grid grid-cols-2 gap-4">
+
+              <div className="grid grid-cols-2 gap-4 *:space-y-1">
                 <div>
                   <Label htmlFor="quoteName">Full Name *</Label>
                   <Input
@@ -226,8 +238,8 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
                   />
                 </div>
               </div>
-              
-              <div>
+
+              <div className="space-y-1">
                 <Label htmlFor="quoteEmail">Email (optional)</Label>
                 <Input
                   id="quoteEmail"
@@ -245,25 +257,47 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
             {/* Quote Summary */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Quote Summary</h3>
-              
+
               <div className="bg-muted/50 p-4 rounded-lg space-y-2">
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="font-medium">Service:</span> {quoteData.service}</div>
-                  <div><span className="font-medium">Distance:</span> {quoteData.miles} miles</div>
-                  <div><span className="font-medium">Vehicle:</span> {quoteData.year} {quoteData.make} {quoteData.model}</div>
-                  <div><span className="font-medium">Estimated Total:</span> <span className="font-bold">${quoteData.estimatedTotal.toFixed(2)}</span></div>
+                  <div>
+                    <span className="font-medium">Service:</span>{" "}
+                    {quoteData.service}
+                  </div>
+                  <div>
+                    <span className="font-medium">Distance:</span>{" "}
+                    {quoteData.miles} miles
+                  </div>
+                  <div>
+                    <span className="font-medium">Vehicle:</span>{" "}
+                    {quoteData.year} {quoteData.make} {quoteData.model}
+                  </div>
+                  <div>
+                    <span className="font-medium">Estimated Total:</span>{" "}
+                    <span className="font-bold">
+                      ${quoteData.estimatedTotal.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
-                
+
                 <div className="pt-2 border-t text-xs text-muted-foreground">
-                  <div><span className="font-medium">From:</span> {quoteData.fromAddress}</div>
-                  <div><span className="font-medium">To:</span> {quoteData.toAddress}</div>
+                  <div>
+                    <span className="font-medium">From:</span>{" "}
+                    {quoteData.fromAddress}
+                  </div>
+                  <div>
+                    <span className="font-medium">To:</span>{" "}
+                    {quoteData.toAddress}
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Message */}
-            <div>
-              <Label htmlFor="quoteMessage">Additional Information (optional)</Label>
+            <div className="space-y-1">
+              <Label htmlFor="quoteMessage">
+                Additional Information (optional)
+              </Label>
               <Textarea
                 id="quoteMessage"
                 value={message}
@@ -272,7 +306,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
                 rows={3}
               />
             </div>
-            
+
             {/* Share My Location Section */}
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
@@ -281,7 +315,8 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
               </Label>
               <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
-                  Help our driver find you faster! Share your exact GPS location to receive the quickest service.
+                  Help our driver find you faster! Share your exact GPS location
+                  to receive the quickest service.
                 </p>
                 <Button
                   type="button"
@@ -302,7 +337,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
                     </>
                   )}
                 </Button>
-                
+
                 {currentLocation && (
                   <div className="mt-2 flex items-center gap-2 p-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded text-xs">
                     <MapPin className="h-3 w-3 text-green-600" />
@@ -311,7 +346,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
                     </span>
                   </div>
                 )}
-                
+
                 {locationError && (
                   <div className="mt-2 p-2 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded">
                     <div className="text-xs text-red-700 dark:text-red-300">
@@ -321,13 +356,13 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
                 )}
               </div>
             </div>
-            
+
             {formError && (
               <div className="text-destructive text-sm p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded">
                 {formError}
               </div>
             )}
-            
+
             <DialogFooter>
               <Button
                 type="button"
@@ -337,8 +372,8 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isSubmitting || !isDistanceCalculated}
               >
                 {isSubmitting ? (
@@ -354,14 +389,17 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
           </form>
         </DialogContent>
       </Dialog>
-      
+
       {/* Success Dialog */}
       <Dialog open={showSuccess} onOpenChange={handleClose}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>✅ Quote Request Sent Successfully!</DialogTitle>
             <DialogDescription className="space-y-2">
-              <p>Thank you for choosing Collision Towing AZ! We've received your quote request.</p>
+              <p>
+                Thank you for choosing Collision Towing AZ! We've received your
+                quote request.
+              </p>
               <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded p-3 mt-3">
                 <p className="text-sm text-green-700 dark:text-green-300">
                   <strong>What happens next:</strong>
@@ -369,13 +407,16 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
                 <ul className="text-sm text-green-700 dark:text-green-300 mt-2 space-y-1">
                   <li>• We'll contact you within minutes to confirm details</li>
                   <li>• Our driver will be dispatched to your location</li>
-                  {customerEmail && <li>• Check your email for confirmation details</li>}
+                  {customerEmail && (
+                    <li>• Check your email for confirmation details</li>
+                  )}
                 </ul>
               </div>
               <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3 mt-3">
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  <strong>Need immediate assistance?</strong><br />
-                  Call us directly at <strong>(623) 777-3847</strong>
+                  <strong>Need immediate assistance?</strong>
+                  <br />
+                  Call us directly at <strong>(623) 283-8345</strong>
                 </p>
               </div>
             </DialogDescription>

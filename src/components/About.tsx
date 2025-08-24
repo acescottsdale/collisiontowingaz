@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Star, Clock, CheckCircle2, Phone } from "lucide-react";
-import professionalDriver from "@/assets/professional-driver.jpg";
+import professionalDriver from "@/assets/images/img3.jpg";
 import Map from "@/components/Map";
 import { useState } from "react";
 

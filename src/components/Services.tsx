@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Truck, Fuel, LifeBuoy, Phone } from "lucide-react";
-import GarageInterior from "@/assets/garage-interior.jpg";
+import GarageInterior from "@/assets/images/img1.jpg";
 
 const Services = () => {
   const services = [

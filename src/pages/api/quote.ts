@@ -344,7 +344,7 @@ export const POST: APIRoute = async ({ request }) => {
               <div class="contact-info">
                 <h3 style="color: #1e40af; margin-top: 0;">📞 Need Immediate Service?</h3>
                 <p style="margin: 10px 0;">For urgent towing needs, call us directly:</p>
-                <p style="margin: 10px 0; font-size: 18px;"><strong>📱 (623) 777-3847</strong></p>
+                <p style="margin: 10px 0; font-size: 18px;"><strong>📱 (623) 283-8345</strong></p>
                 <p style="margin: 10px 0; font-size: 14px; color: #6b7280;">Available 24/7 for emergency services</p>
               </div>
 
@@ -441,7 +441,7 @@ Quote Summary:
 - Estimated Total: $${data.estimatedTotal.toFixed(2)}
 ${discounts.length > 0 ? `- Discounts Applied: ${discountText}` : ""}
 
-For immediate service, call us at (623) 777-3847
+For immediate service, call us at (623) 283-8345
 
 We'll contact you shortly to confirm details and schedule your service.
 
