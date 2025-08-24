@@ -20,35 +20,39 @@ const quoteSchema = z.object({
     .optional()
     .or(z.literal("")),
   message: z.string().optional(),
-  
+
   // Service and location info
   service: z.enum(["towing", "fuel", "lockout", "jumpstart"]),
   fromAddress: z.string().min(5, "Please provide a pickup address"),
   toAddress: z.string().min(5, "Please provide a destination address"),
   miles: z.string().min(1, "Distance calculation is required"),
-  
+
   // Vehicle info
   vehicleYear: z.string().min(4, "Please provide vehicle year"),
   vehicleMake: z.string().min(1, "Please provide vehicle make"),
   vehicleModel: z.string().min(1, "Please provide vehicle model"),
   vehiclePlate: z.string().min(1, "Please provide license plate"),
-  vehicleRegistrationState: z.string().min(2, "Please provide registration state"),
+  vehicleRegistrationState: z
+    .string()
+    .min(2, "Please provide registration state"),
   isLargeVehicle: z.boolean(),
-  
+
   // Discounts
   isVeteran: z.boolean(),
   isStudent: z.boolean(),
-  
+
   // Calculated cost
   estimatedTotal: z.number().min(0, "Invalid estimated total"),
-  
+
   // Optional GPS location
-  location: z.object({
-    latitude: z.number(),
-    longitude: z.number(),
-    googleMapsLink: z.string(),
-    accuracy: z.string(),
-  }).optional(),
+  location: z
+    .object({
+      latitude: z.number(),
+      longitude: z.number(),
+      googleMapsLink: z.string(),
+      accuracy: z.string(),
+    })
+    .optional(),
 });
 
 export const POST: APIRoute = async ({ request }) => {
@@ -114,9 +118,9 @@ export const POST: APIRoute = async ({ request }) => {
     // Create service type display
     const serviceTypeDisplay = {
       towing: "🚚 Towing",
-      fuel: "⛽ Fuel Delivery", 
+      fuel: "⛽ Fuel Delivery",
       lockout: "🔐 Lockout Service",
-      jumpstart: "⚡ Jump Start"
+      jumpstart: "⚡ Jump Start",
     }[data.service];
 
     // Create discounts display
@@ -185,12 +189,16 @@ export const POST: APIRoute = async ({ request }) => {
                   <div class="label">Phone Number:</div>
                   <div class="value"><a href="tel:${data.customerPhone.replace(/[^\d+]/g, "")}" style="color: #1e40af; text-decoration: none;">${data.customerPhone}</a></div>
                 </div>
-                ${data.customerEmail ? `
+                ${
+                  data.customerEmail
+                    ? `
                 <div class="field">
                   <div class="label">Email:</div>
                   <div class="value"><a href="mailto:${data.customerEmail}" style="color: #1e40af; text-decoration: none;">${data.customerEmail}</a></div>
                 </div>
-                ` : ""}
+                `
+                    : ""
+                }
               </div>
 
               <div class="section">
@@ -207,7 +215,9 @@ export const POST: APIRoute = async ({ request }) => {
                   <div class="label">Distance:</div>
                   <div class="value">${data.miles} miles</div>
                 </div>
-                ${data.location ? `
+                ${
+                  data.location
+                    ? `
                 <div class="field">
                   <div class="label">GPS Location Shared:</div>
                   <div class="value">
@@ -217,7 +227,9 @@ export const POST: APIRoute = async ({ request }) => {
                     <small style="color: #6b7280;">Lat: ${data.location.latitude}, Lng: ${data.location.longitude}</small>
                   </div>
                 </div>
-                ` : ""}
+                `
+                    : ""
+                }
               </div>
 
               <div class="section">
@@ -258,14 +270,18 @@ export const POST: APIRoute = async ({ request }) => {
                 </div>
               </div>
 
-              ${data.message ? `
+              ${
+                data.message
+                  ? `
               <div class="section">
                 <h3 style="color: #1e40af; margin-bottom: 15px;">💬 Customer Message</h3>
                 <div class="field">
                   <div class="value">${data.message.replace(/\n/g, "<br>")}</div>
                 </div>
               </div>
-              ` : ""}
+              `
+                  : ""
+              }
             </div>
             
             <div class="footer">
@@ -334,11 +350,15 @@ export const POST: APIRoute = async ({ request }) => {
                 <div class="field">
                   <span class="label">Estimated Total:</span> <span class="value highlight"><strong>$${data.estimatedTotal.toFixed(2)}</strong></span>
                 </div>
-                ${discounts.length > 0 ? `
+                ${
+                  discounts.length > 0
+                    ? `
                 <div class="field">
                   <span class="label">Discounts Applied:</span> <span class="value">${discountText}</span>
                 </div>
-                ` : ""}
+                `
+                    : ""
+                }
               </div>
 
               <div class="contact-info">
@@ -369,7 +389,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Send business notification email
     const businessEmailResponse = await resend.emails.send({
-      from: "Collision Towing AZ <noreply@riyan.tech>",
+      from: "Collision Towing AZ <info@collisiontowingaz.com>",
       to: [notificationEmail],
       subject: businessEmailSubject,
       html: businessEmailHtml,
@@ -402,7 +422,10 @@ Contact customer immediately to confirm service!
     });
 
     if (businessEmailResponse.error) {
-      console.error("Failed to send business notification email:", businessEmailResponse.error);
+      console.error(
+        "Failed to send business notification email:",
+        businessEmailResponse.error,
+      );
       return new Response(
         JSON.stringify({
           success: false,
@@ -421,7 +444,7 @@ Contact customer immediately to confirm service!
     let customerEmailResponse = null;
     if (data.customerEmail) {
       customerEmailResponse = await resend.emails.send({
-        from: "Collision Towing AZ <noreply@riyan.tech>",
+        from: "Collision Towing AZ <info@collisiontowingaz.com>",
         to: [data.customerEmail],
         subject: customerEmailSubject,
         html: customerEmailHtml,
@@ -451,7 +474,10 @@ The Collision Towing AZ Team
       });
 
       if (customerEmailResponse?.error) {
-        console.error("Failed to send customer confirmation email:", customerEmailResponse.error);
+        console.error(
+          "Failed to send customer confirmation email:",
+          customerEmailResponse.error,
+        );
         // Don't fail the entire request if customer email fails
       }
     }

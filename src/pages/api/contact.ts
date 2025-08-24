@@ -155,7 +155,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Send email notification using Resend
     const emailResponse = await resend.emails.send({
-      from: "Collision Towing AZ <noreply@riyan.tech>",
+      from: "Collision Towing AZ <info@collisiontowingaz.com>",
       to: [notificationEmail],
       subject: emailSubject,
       html: emailHtml,
