@@ -127,7 +127,7 @@ const LocationButton: React.FC = () => {
   };
 
   const shareViaPhone = () => {
-    const message = `My current location: ${location?.address}\n\nGoogle Maps: https://maps.google.com/?q=${location?.latitude},${location?.longitude}\n\nPlease send help to this location. Contact: (623) 253-8345`;
+    const message = `My current location: ${location?.address}\n\nGoogle Maps: https://maps.google.com/?q=${location?.latitude},${location?.longitude}\n\nPlease send help to this location.`;
     const encodedMessage = encodeURIComponent(message);
 
     // Detect if user is on mobile device
