@@ -2,6 +2,7 @@
 import "@/styles/global.css";
 import { Font } from "astro:assets";
 import { Toaster } from "@/components/ui/sonner";
+import LocationButton from "@/components/LocationButton";
 
 export interface Props {
   title?: string;
@@ -270,6 +271,7 @@ const finalStructuredData = structuredData || structuredDataDefaults;
       <slot />
     </main>
 
+    <LocationButton client:load />
     <Toaster client:load />
   </body>
 </html>
