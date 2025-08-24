@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapPin, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { QuoteData } from "./types";
-import { getCoordsWithFallbacks } from "./utils";
 
 interface EnhancedQuoteModalProps {
   open: boolean;
@@ -34,62 +33,9 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Location sharing states
-  const [currentLocation, setCurrentLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
-  const [locationError, setLocationError] = useState("");
-  const [gettingLocation, setGettingLocation] = useState(false);
-
   // Check if distance has been calculated (required for quote submission)
   const isDistanceCalculated =
     quoteData.miles && parseFloat(quoteData.miles) > 0;
-
-  // Location sharing function
-  async function handleShareLocation() {
-    setLocationError("");
-    setGettingLocation(true);
-
-    try {
-      if (!navigator.geolocation) {
-        throw new Error("Geolocation is not supported by your browser.");
-      }
-
-      const coords = await getCoordsWithFallbacks();
-
-      setCurrentLocation({
-        lat: coords[1],
-        lng: coords[0],
-      });
-
-      // Update the message field with location info
-      const locationText = `📍 My exact location: https://maps.google.com/?q=${coords[1]},${coords[0]}`;
-      setMessage((prev) =>
-        prev ? `${prev}\n\n${locationText}` : locationText,
-      );
-    } catch (error) {
-      let message =
-        "Could not get your location. Please ensure location access is enabled.";
-      if (error instanceof GeolocationPositionError) {
-        switch (error.code) {
-          case 1:
-            message =
-              "Location access denied. Please enable location permissions and try again.";
-            break;
-          case 2:
-            message = "Location unavailable. Please try again.";
-            break;
-          case 3:
-            message = "Location request timed out. Please try again.";
-            break;
-        }
-      }
-      setLocationError(message);
-    } finally {
-      setGettingLocation(false);
-    }
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -138,16 +84,6 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
 
         // Calculated cost
         estimatedTotal: quoteData.estimatedTotal,
-
-        // Optional GPS location
-        location: currentLocation
-          ? {
-              latitude: currentLocation.lat,
-              longitude: currentLocation.lng,
-              googleMapsLink: `https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lng}`,
-              accuracy: "GPS coordinates shared by customer",
-            }
-          : undefined,
       };
 
       const response = await fetch("/api/quote", {
@@ -171,8 +107,6 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
       setCustomerPhone("");
       setCustomerEmail("");
       setMessage("");
-      setCurrentLocation(null);
-      setLocationError("");
     } catch (error) {
       console.error("Error submitting quote:", error);
       setFormError("Failed to submit quote request. Please try again.");
@@ -190,8 +124,6 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
     setCustomerPhone("");
     setCustomerEmail("");
     setMessage("");
-    setCurrentLocation(null);
-    setLocationError("");
   }
 
   return (
@@ -305,56 +237,6 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
                 placeholder="Describe your situation, special instructions, or any additional details..."
                 rows={3}
               />
-            </div>
-
-            {/* Share My Location Section */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-blue-600" />
-                Share My Exact Location
-              </Label>
-              <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
-                  Help our driver find you faster! Share your exact GPS location
-                  to receive the quickest service.
-                </p>
-                <Button
-                  type="button"
-                  onClick={handleShareLocation}
-                  disabled={gettingLocation}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  size="sm"
-                >
-                  {gettingLocation ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Getting your location...
-                    </>
-                  ) : (
-                    <>
-                      <MapPin className="h-4 w-4 mr-2" />
-                      Share My Location
-                    </>
-                  )}
-                </Button>
-
-                {currentLocation && (
-                  <div className="mt-2 flex items-center gap-2 p-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded text-xs">
-                    <MapPin className="h-3 w-3 text-green-600" />
-                    <span className="text-green-700 dark:text-green-300">
-                      ✓ Location shared! GPS coordinates added to your request.
-                    </span>
-                  </div>
-                )}
-
-                {locationError && (
-                  <div className="mt-2 p-2 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded">
-                    <div className="text-xs text-red-700 dark:text-red-300">
-                      {locationError}
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
 
             {formError && (
