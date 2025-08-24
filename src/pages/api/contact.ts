@@ -1,12 +1,16 @@
 import type { APIRoute } from "astro";
 import { Resend } from "resend";
 import { z } from "zod";
+import { RESEND_API_KEY, NOTIFICATION_EMAIL } from "astro:env/server";
 
 export const prerender = false;
 
 // Initialize Resend with API key from environment variables
 const getResendInstance = () => {
-  const apiKey = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
+  const apiKey =
+    RESEND_API_KEY ||
+    import.meta.env.RESEND_API_KEY ||
+    process.env.RESEND_API_KEY;
   if (!apiKey) {
     throw new Error("RESEND_API_KEY environment variable is not set");
   }
@@ -55,8 +59,12 @@ export const POST: APIRoute = async ({ request }) => {
     const { name, phone, email, message } = validationResult.data;
 
     // Check if required environment variables are set
-    const notificationEmail = import.meta.env.NOTIFICATION_EMAIL || process.env.NOTIFICATION_EMAIL;
-    const resendApiKey = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
+    const notificationEmail =
+      NOTIFICATION_EMAIL ||
+      import.meta.env.NOTIFICATION_EMAIL ||
+      process.env.NOTIFICATION_EMAIL;
+    const resendApiKey =
+      import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
 
     if (!notificationEmail || !resendApiKey) {
       console.error(
