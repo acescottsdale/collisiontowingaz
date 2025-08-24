@@ -174,7 +174,7 @@ const LocationButton: React.FC = () => {
 
       {/* Location Modal */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md overflow-y-auto scrollbar-hide h-[60vh] lg:h-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" />
