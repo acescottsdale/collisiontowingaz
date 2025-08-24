@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,10 +14,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useToast } from "@/hooks/use-toast";
-import { Phone, Mail, MapPin, Clock, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+import { Phone, Mail, MapPin, Clock, ShieldCheck, Loader2 } from "lucide-react";
 
 const Contact = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const contactInfo = [
     {
       icon: Phone,
@@ -69,9 +71,11 @@ const Contact = () => {
     mode: "onTouched",
   });
 
-  const { toast } = useToast();
-
   const onSubmit = async (values: z.infer<typeof schema>) => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -83,28 +87,43 @@ const Contact = () => {
 
       const result = await response.json();
 
-      if (result.success) {
-        toast({
-          title: "Request received",
+      if (response.ok && result.success) {
+        toast.success("Request received!", {
           description:
             "Thanks! Our dispatcher will reach out shortly. For urgent help, call now.",
+          duration: 5000,
         });
         form.reset();
       } else {
-        toast({
-          title: "Error",
-          description:
-            result.message ||
-            "Failed to send request. Please try again or call us directly.",
-        });
+        // Handle validation errors
+        if (response.status === 400 && result.errors) {
+          Object.entries(result.errors).forEach(([field, messages]) => {
+            if (Array.isArray(messages) && messages.length > 0) {
+              form.setError(field as any, {
+                type: "server",
+                message: messages[0],
+              });
+            }
+          });
+          toast.error("Please check the form for errors");
+        } else {
+          toast.error("Unable to send request", {
+            description:
+              result.message ||
+              "There was a problem sending your request. Please try again or call us directly.",
+            duration: 5000,
+          });
+        }
       }
     } catch (error) {
       console.error("Failed to submit contact form:", error);
-      toast({
-        title: "Error",
+      toast.error("Connection error", {
         description:
-          "Failed to send request. Please try again or call us directly.",
+          "Unable to connect to our servers. Please check your internet connection or call us directly.",
+        duration: 5000,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -212,9 +231,17 @@ const Contact = () => {
                   <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <Button
                       type="submit"
-                      className="gap-2 w-full sm:w-auto border-2 border-primary hover:bg-transparent hover:text-primary dark:text-white"
+                      disabled={isSubmitting}
+                      className="gap-2 w-full sm:w-auto border-2 border-primary hover:bg-transparent hover:text-primary dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Send request
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        "Send request"
+                      )}
                     </Button>
                     <Button
                       variant="outline"

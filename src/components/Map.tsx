@@ -1,7 +1,14 @@
-import React, { useEffect, useRef } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import React, { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
+
+/// <reference types="@types/google.maps" />
+
+declare global {
+  interface Window {
+    google: typeof google;
+    initGoogleMaps?: () => void;
+  }
+}
 
 type Marker = { name: string; coordinates: [number, number] };
 
@@ -25,8 +32,6 @@ interface MapProps {
 }
 
 const phoenixCenter: [number, number] = [-112.074, 33.4484];
-const MAPBOX_TOKEN =
-  "pk.eyJ1Ijoic2FnaS1haXJ0YXhpLWlsIiwiYSI6ImNseDkzZXM2eDA1a3gya3FrdGF0OWhmc3AifQ.7oZfKX2iCD9AIa0JjPeA8Q";
 
 const markers: Marker[] = [
   { name: "Phoenix", coordinates: [-112.074, 33.4484] },
@@ -53,164 +58,359 @@ const markers: Marker[] = [
 
 const Map: React.FC<MapProps> = ({ shopLocation, onUserLocation }) => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   const { resolvedTheme } = useTheme();
   const shopRef = useRef<ShopLocation | undefined>(shopLocation);
   const onLocRef = useRef<typeof onUserLocation>(onUserLocation);
   const didLocateRef = useRef(false);
+  const markersRef = useRef<google.maps.Marker[]>([]);
 
   useEffect(() => {
     shopRef.current = shopLocation;
     onLocRef.current = onUserLocation;
   }, [shopLocation, onUserLocation]);
 
+  // Load Google Maps API
   useEffect(() => {
-    if (!mapContainer.current) return;
-    mapboxgl.accessToken = MAPBOX_TOKEN;
-
-    const map = new mapboxgl.Map({
-      container: mapContainer.current,
-      style:
-        resolvedTheme === "dark"
-          ? "mapbox://styles/mapbox/dark-v11"
-          : "mapbox://styles/mapbox/light-v11",
-      center: phoenixCenter,
-      zoom: 10,
-      pitch: 0,
-      bearing: 0,
-      attributionControl: true,
-    });
-    mapRef.current = map;
-
-    map.addControl(
-      new mapboxgl.NavigationControl({ visualizePitch: false }),
-      "top-right"
-    );
-    const geolocate = new mapboxgl.GeolocateControl({
-      positionOptions: { enableHighAccuracy: true },
-      trackUserLocation: false,
-      showAccuracyCircle: false,
-    });
-    map.addControl(geolocate, "top-right");
-    map.scrollZoom.disable();
-
-    map.on("load", () => {
-      // city markers
-      markers.forEach((m) => {
-        new mapboxgl.Marker({ color: "#E21B5A" })
-          .setLngLat(m.coordinates)
-          .setPopup(new mapboxgl.Popup({ offset: 8 }).setText(m.name))
-          .addTo(map);
-      });
-
-      // shop marker
-      const shop = shopRef.current;
-      if (shop) {
-        const el = document.createElement("div");
-        el.className =
-          "relative h-4 w-4 -translate-y-1 rounded-full bg-primary ring-4 ring-primary/30 shadow-lg";
-        new mapboxgl.Marker({ element: el })
-          .setLngLat(shop.coordinates)
-          .setPopup(
-            new mapboxgl.Popup({ offset: 10 }).setHTML(
-              `<div style="font-size:13px;line-height:1.2">
-                <strong>${shop.name}</strong><br/>
-                ${shop.address ? `${shop.address}<br/>` : ""}
-                ${
-                  shop.phone
-                    ? `<a href="tel:${shop.phone.replace(
-                        /[^\d+]/g,
-                        ""
-                      )}">Call ${shop.phone}</a>`
-                    : ""
-                }
-              </div>`
-            )
-          )
-          .addTo(map);
+    const initializeMap = async () => {
+      const apiKey = import.meta.env.PUBLIC_GOOGLE_MAPS_API_KEY;
+      if (!apiKey || apiKey === "your_google_maps_api_key_here") {
+        console.error("Google Maps API key not configured");
+        return;
       }
 
-      // user geolocation handler
-      const handleLocated = async (coords: [number, number]) => {
-        if (didLocateRef.current) return;
-        didLocateRef.current = true;
+      // Check if Google Maps is already loaded
+      if (window.google && window.google.maps) {
+        setIsLoaded(true);
+        return;
+      }
 
-        const userEl = document.createElement("div");
-        userEl.className =
-          "relative h-3 w-3 -translate-y-1 rounded-full bg-blue-600 ring-4 ring-blue-600/30 shadow-md";
-        new mapboxgl.Marker({ element: userEl }).setLngLat(coords).addTo(map);
+      // Load Google Maps script
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGoogleMaps`;
+      script.async = true;
+      script.defer = true;
 
-        const toRad = (v: number) => (v * Math.PI) / 180;
-        const distanceKm = (a: [number, number], b: [number, number]) => {
-          const R = 6371;
-          const dLat = toRad(b[1] - a[1]);
-          const dLng = toRad(b[0] - a[0]);
-          const lat1 = toRad(a[1]);
-          const lat2 = toRad(b[1]);
-          const s1 = Math.sin(dLat / 2);
-          const s2 = Math.sin(dLng / 2);
-          const h = s1 * s1 + Math.cos(lat1) * Math.cos(lat2) * s2 * s2;
-          return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
-        };
-
-        const shopCoords = (shopRef.current?.coordinates ?? phoenixCenter) as [
-          number,
-          number
-        ];
-        const distanceToShopKm =
-          Math.round(distanceKm(coords, shopCoords) * 10) / 10;
-        let nearestCity = markers[0];
-        let nearestDist = distanceKm(coords, markers[0].coordinates);
-        for (let i = 1; i < markers.length; i++) {
-          const d = distanceKm(coords, markers[i].coordinates);
-          if (d < nearestDist) {
-            nearestCity = markers[i];
-            nearestDist = d;
-          }
-        }
-
-        let address: string | undefined;
-        try {
-          const res = await fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${coords[0]},${coords[1]}.json?access_token=${MAPBOX_TOKEN}`
-          );
-          const json = await res.json();
-          address = json?.features?.[0]?.place_name as string | undefined;
-        } catch {
-          // ignore reverse geocoding errors
-        }
-
-        const bounds = new mapboxgl.LngLatBounds();
-        bounds.extend(coords);
-        bounds.extend(shopCoords);
-        map.fitBounds(bounds, { padding: 48, maxZoom: 12, duration: 800 });
-
-        onLocRef.current?.({
-          coords,
-          address,
-          distanceToShopKm,
-          nearestCity: {
-            name: nearestCity.name,
-            distanceKm: Math.round(nearestDist * 10) / 10,
-          },
-        });
+      // Define the callback function
+      window.initGoogleMaps = () => {
+        setIsLoaded(true);
       };
 
-      geolocate.on("geolocate", (e: GeolocationPosition) => {
-        handleLocated([e.coords.longitude, e.coords.latitude]);
-      });
+      script.onerror = () => {
+        console.error("Error loading Google Maps");
+      };
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => handleLocated([pos.coords.longitude, pos.coords.latitude]),
-          () => {},
-          { enableHighAccuracy: true, timeout: 10000 }
+      document.head.appendChild(script);
+
+      return () => {
+        // Cleanup script if component unmounts
+        const existingScript = document.querySelector(
+          `script[src*="maps.googleapis.com"]`,
         );
-      }
+        if (existingScript) {
+          document.head.removeChild(existingScript);
+        }
+        window.initGoogleMaps = undefined;
+      };
+    };
+
+    initializeMap();
+  }, []);
+
+  // Initialize map when loaded
+  useEffect(() => {
+    if (!isLoaded || !mapContainer.current) return;
+
+    const map = new google.maps.Map(mapContainer.current, {
+      center: { lat: phoenixCenter[1], lng: phoenixCenter[0] },
+      zoom: 10,
+      styles: resolvedTheme === "dark" ? getDarkMapStyles() : [],
+      disableDefaultUI: false,
+      zoomControl: true,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
+      scrollwheel: false,
     });
 
-    return () => map.remove();
-  }, [resolvedTheme]);
+    mapRef.current = map;
+
+    // Clear existing markers
+    markersRef.current.forEach((marker) => marker.setMap(null));
+    markersRef.current = [];
+
+    // Add city markers
+    markers.forEach((marker) => {
+      const mapMarker = new google.maps.Marker({
+        position: { lat: marker.coordinates[1], lng: marker.coordinates[0] },
+        map,
+        title: marker.name,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: "#E21B5A",
+          fillOpacity: 1,
+          strokeColor: "#ffffff",
+          strokeWeight: 2,
+        },
+      });
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: marker.name,
+      });
+
+      mapMarker.addListener("click", () => {
+        infoWindow.open(map, mapMarker);
+      });
+
+      markersRef.current.push(mapMarker);
+    });
+
+    // Add shop marker if available
+    const shop = shopRef.current;
+    if (shop) {
+      const shopMarker = new google.maps.Marker({
+        position: { lat: shop.coordinates[1], lng: shop.coordinates[0] },
+        map,
+        title: shop.name,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 10,
+          fillColor: "hsl(var(--primary))",
+          fillOpacity: 1,
+          strokeColor: "hsl(var(--primary))",
+          strokeWeight: 4,
+          strokeOpacity: 0.3,
+        },
+      });
+
+      const shopInfoWindow = new google.maps.InfoWindow({
+        content: `
+          <div style="font-size:13px;line-height:1.2">
+            <strong>${shop.name}</strong><br/>
+            ${shop.address ? `${shop.address}<br/>` : ""}
+            ${
+              shop.phone
+                ? `<a href="tel:${shop.phone.replace(
+                    /[^\d+]/g,
+                    "",
+                  )}">Call ${shop.phone}</a>`
+                : ""
+            }
+          </div>
+        `,
+      });
+
+      shopMarker.addListener("click", () => {
+        shopInfoWindow.open(map, shopMarker);
+      });
+
+      markersRef.current.push(shopMarker);
+    }
+
+    // Handle user location
+    const handleLocated = async (coords: [number, number]) => {
+      if (didLocateRef.current) return;
+      didLocateRef.current = true;
+
+      const userMarker = new google.maps.Marker({
+        position: { lat: coords[1], lng: coords[0] },
+        map,
+        title: "Your Location",
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: "#2563eb",
+          fillOpacity: 1,
+          strokeColor: "#2563eb",
+          strokeWeight: 4,
+          strokeOpacity: 0.3,
+        },
+      });
+
+      markersRef.current.push(userMarker);
+
+      // Calculate distances
+      const toRad = (v: number) => (v * Math.PI) / 180;
+      const distanceKm = (a: [number, number], b: [number, number]) => {
+        const R = 6371;
+        const dLat = toRad(b[1] - a[1]);
+        const dLng = toRad(b[0] - a[0]);
+        const lat1 = toRad(a[1]);
+        const lat2 = toRad(b[1]);
+        const s1 = Math.sin(dLat / 2);
+        const s2 = Math.sin(dLng / 2);
+        const h = s1 * s1 + Math.cos(lat1) * Math.cos(lat2) * s2 * s2;
+        return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+      };
+
+      const shopCoords = (shopRef.current?.coordinates ?? phoenixCenter) as [
+        number,
+        number,
+      ];
+      const distanceToShopKm =
+        Math.round(distanceKm(coords, shopCoords) * 10) / 10;
+
+      let nearestCity = markers[0];
+      let nearestDist = distanceKm(coords, markers[0].coordinates);
+      for (let i = 1; i < markers.length; i++) {
+        const d = distanceKm(coords, markers[i].coordinates);
+        if (d < nearestDist) {
+          nearestCity = markers[i];
+          nearestDist = d;
+        }
+      }
+
+      // Get address using Google Geocoding
+      let address: string | undefined;
+      try {
+        const geocoder = new google.maps.Geocoder();
+        const response = await geocoder.geocode({
+          location: { lat: coords[1], lng: coords[0] },
+        });
+        if (response.results[0]) {
+          address = response.results[0].formatted_address;
+        }
+      } catch {
+        // ignore reverse geocoding errors
+      }
+
+      // Fit bounds to show both user and shop locations
+      const bounds = new google.maps.LatLngBounds();
+      bounds.extend({ lat: coords[1], lng: coords[0] });
+      bounds.extend({ lat: shopCoords[1], lng: shopCoords[0] });
+      map.fitBounds(bounds, 48);
+
+      // Set max zoom to prevent over-zooming
+      const listener = google.maps.event.addListener(map, "idle", () => {
+        if (map.getZoom()! > 12) {
+          map.setZoom(12);
+        }
+        google.maps.event.removeListener(listener);
+      });
+
+      onLocRef.current?.({
+        coords,
+        address,
+        distanceToShopKm,
+        nearestCity: {
+          name: nearestCity.name,
+          distanceKm: Math.round(nearestDist * 10) / 10,
+        },
+      });
+    };
+
+    // Try to get user location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => handleLocated([pos.coords.longitude, pos.coords.latitude]),
+        () => {},
+        { enableHighAccuracy: true, timeout: 10000 },
+      );
+    }
+
+    return () => {
+      // Cleanup markers
+      markersRef.current.forEach((marker) => marker.setMap(null));
+      markersRef.current = [];
+    };
+  }, [isLoaded, resolvedTheme]);
+
+  // Dark mode styles for Google Maps
+  const getDarkMapStyles = () => [
+    { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+    { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+    { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+    {
+      featureType: "administrative.locality",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#d59563" }],
+    },
+    {
+      featureType: "poi",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#d59563" }],
+    },
+    {
+      featureType: "poi.park",
+      elementType: "geometry",
+      stylers: [{ color: "#263c3f" }],
+    },
+    {
+      featureType: "poi.park",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#6b9a76" }],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry",
+      stylers: [{ color: "#38414e" }],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry.stroke",
+      stylers: [{ color: "#212a37" }],
+    },
+    {
+      featureType: "road",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#9ca5b3" }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry",
+      stylers: [{ color: "#746855" }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry.stroke",
+      stylers: [{ color: "#1f2835" }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#f3d19c" }],
+    },
+    {
+      featureType: "transit",
+      elementType: "geometry",
+      stylers: [{ color: "#2f3948" }],
+    },
+    {
+      featureType: "transit.station",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#d59563" }],
+    },
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [{ color: "#17263c" }],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#515c6d" }],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.stroke",
+      stylers: [{ color: "#17263c" }],
+    },
+  ];
+
+  if (!isLoaded) {
+    return (
+      <div className="relative w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-xl">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Loading map...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

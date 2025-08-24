@@ -194,3 +194,38 @@
     @apply transition-colors;
   }
 }
+
+/* Location Button Styles */
+.location-button-fixed {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+}
+
+@media (max-width: 640px) {
+  .location-button-fixed {
+    bottom: 1rem;
+    right: 1rem;
+  }
+}
+
+/* Ensure the button doesn't interfere with other floating elements */
+.location-button-fixed {
+  pointer-events: auto;
+}
+
+/* Animation for the location button */
+@keyframes pulse-location {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+
+.location-button-pulse {
+  animation: pulse-location 2s infinite;
+}
