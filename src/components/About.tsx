@@ -115,14 +115,14 @@ const About = () => {
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
                 <Button
                   size="lg"
-                  className="gap-2 border-2 border-primary hover:bg-transparent hover:text-primary dark:text-white"
+                  className="gap-2 border-2 border-primary hover:bg-transparent hover:text-primary dark:text-white py-2 rounded-full"
                   asChild
                 >
                   <a href="tel:+16232538345" aria-label="Call Clean Tow now">
                     <Phone className="h-5 w-5" /> Call Now
                   </a>
                 </Button>
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm text-primary">
+                <div className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-2.5 text-sm text-primary ">
                   <Clock className="h-4 w-4" /> 24/7 Available
                 </div>
               </div>
