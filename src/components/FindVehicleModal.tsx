@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Car, Maximize2, ExternalLink } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface FindVehicleModalProps {
   variant?: "default" | "ghost" | "outline";
@@ -42,7 +43,7 @@ const FindVehicleModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} size={size} className={`gap-2 ${className}`}>
+        <Button variant={variant} size={size} className={cn(`gap-2 ${className}`)}>
           {showIcon && <Car className="h-4 w-4" />}
           Find Your Vehicle
         </Button>
