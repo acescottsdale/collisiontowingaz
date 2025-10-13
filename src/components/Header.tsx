@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Phone, Menu, X } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
+// import ThemeToggle from "@/components/ThemeToggle";
 import FindVehicleModal from "@/components/FindVehicleModal";
 import logo from "@/assets/images/logo.png";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -115,7 +115,7 @@ const Header = () => {
                 })}
               </nav>
               <div className="flex items-center space-x-2">
-                <ThemeToggle />
+                {/* <ThemeToggle /> */}
                 {!isMobile && (
                   <FindVehicleModal
                     variant="outline"
@@ -127,17 +127,17 @@ const Header = () => {
                 <Button
                   variant="default"
                   asChild
-                  className="gap-2 w-full sm:w-auto border-2 border-primary-foreground/30 dark:border-white/30 bg-primary-foreground/10 dark:bg-white/10 text-primary-foreground dark:text-white hover:bg-primary-foreground dark:hover:bg-white hover:text-primary transition-all duration-300 max-w-max text-xs sm:text-sm md:text-base px-2 py-0.5 sm:px-4 sm:py-2"
+                  className="gap-2 w-full sm:w-auto border-2 border-primary-foreground/30 dark:border-white/30 hover:bg-primary-foreground/10 dark:bg-white/10 hover:text-primary-foreground dark:text-white bg-secondary dark:hover:bg-white text-primary transition-all duration-300 max-w-max text-xs sm:text-sm md:text-base px-2 py-2 sm:px-4"
                 >
                   <a href="tel:6232538345">Call Now</a>
                 </Button>{" "}
-                <Button
+                {/* <Button
                   variant="default"
                   asChild
                   className="gap-2 w-full sm:w-auto border-2 border-primary-foreground/30 dark:border-white/30 bg-primary-foreground/10 dark:bg-white/10 text-primary-foreground dark:text-white hover:bg-primary-foreground dark:hover:bg-white hover:text-primary transition-all duration-300 max-w-max text-xs sm:text-sm md:text-base px-2 py-0.5 sm:px-4 sm:py-2"
                 >
                   <a href="#quote">Get Free Quote</a>
-                </Button>
+                </Button> */}
               </div>
               <button
                 className="lg:hidden p-2 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary text-white bg-white/10 hover:text-primary rounded-sm"
@@ -229,9 +229,9 @@ const Header = () => {
             variant="outline"
             className="border-2 border-primary hover:bg-transparent hover:text-primary"
           />
-          <div className="mt-2">
+          {/* <div className="mt-2">
             <ThemeToggle />
-          </div>
+          </div> */}
         </nav>
       </aside>
     </>

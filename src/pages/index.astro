@@ -9,6 +9,7 @@ import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import StickyCallButton from "@/components/StickyCallButton";
 import Layout from "@/layouts/Layout.astro";
 
 export const prerender = true;
@@ -27,17 +28,18 @@ const seoData = {
 
 <Layout {...seoData}>
   <div
-    class="min-h-screen overflow-hidden bg-[radial-gradient(1200px_600px_at_10%_-10%,hsl(221_72%_28%/.05),transparent),radial-gradient(800px_400px_at_110%_10%,hsl(258_84%_60%/.06),transparent)] dark:bg-[radial-gradient(1200px_600px_at_10%_-10%,hsl(221_72%_66%/.08),transparent),radial-gradient(800px_400px_at_110%_10%,hsl(258_84%_70%/.08),transparent)]"
+    class="min-h-screen overflow-hidden"
   >
     <Header client:only />
     <Hero client:load />
+    <Testimonials client:load />
     <Services client:load />
     <CostCalculator client:load />
     <About client:load />
     <!-- <Gallery client:load /> -->
-    <Testimonials client:load />
     <FAQ client:load />
     <Contact client:load />
     <Footer client:load />
+    <StickyCallButton client:load />
   </div>
 </Layout>

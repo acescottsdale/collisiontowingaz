@@ -153,7 +153,7 @@ const structuredDataDefaults = {
 const finalStructuredData = structuredData || structuredDataDefaults;
 ---
 
-<script is:inline>
+<!-- <script is:inline>
   const getThemePreference = () => {
     if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
       return localStorage.getItem("theme");
@@ -175,7 +175,7 @@ const finalStructuredData = structuredData || structuredDataDefaults;
       attributeFilter: ["class"],
     });
   }
-</script>
+</script> -->
 
 <html lang="en">
   <head>
@@ -243,6 +243,7 @@ const finalStructuredData = structuredData || structuredDataDefaults;
 
     <!-- Structured Data -->
     <script
+      is:inline
       type="application/ld+json"
       set:html={JSON.stringify(finalStructuredData)}
     />
