@@ -14,7 +14,9 @@ const Hero = () => {
         alt="Hero Background"
         className="absolute inset-0 size-full object-cover scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-primary/40 to-transparent dark:from-black/40 dark:via-primary/30" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-primary/40 to-transparent dark:from-black/40 dark:via-primary/30">
+        {" "}
+      </div>
       {/* <div className="absolute inset-0 [background-image:radial-gradient(circle_at_20%_20%,hsl(0_0%_100%/.08),transparent_25%),radial-gradient(circle_at_80%_30%,hsl(0_0%_100%/.06),transparent_20%)]" /> */}
 
       {/* Content */}
@@ -78,10 +80,10 @@ const Hero = () => {
           </div>
         </div>
       </div>
-      <div
+      {/* <div
         className="pointer-events-none absolute top-0 left-0 w-full h-1/4 sm:h-1/3 bg-gradient-to-b from-primary via-primary/60 to-transparent z-0"
         aria-hidden="true"
-      />
+      /> */}
     </section>
   );
 };

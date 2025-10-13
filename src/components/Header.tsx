@@ -74,8 +74,8 @@ const Header = () => {
       <header
         className={`fixed inset-x-0 top-0 z-50 duration-500  ${
           isSticky
-            ? "py-2 shadow-md backdrop-blur-xl bg-gradient-to-br from-primary to-primary"
-            : "py-4 bg-transparent"
+            ? "py-3 shadow-md  bg-gradient-to-br from-primary to-primary"
+            : "py-4 bg-transparent backdrop-blur-xl"
         }`}
         role="banner"
       >
