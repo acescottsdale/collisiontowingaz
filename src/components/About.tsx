@@ -16,6 +16,8 @@ const About = () => {
     distanceToShopKm?: number;
     nearestCity?: { name: string; distanceKm: number };
   } | null>(null);
+  const [requestLocation, setRequestLocation] = useState(false);
+  const [locationRequested, setLocationRequested] = useState(false);
 
   return (
     <section id="about" className="py-20 bg-muted/20 dark:bg-background">
@@ -139,7 +141,29 @@ const About = () => {
 
                 {/* Interactive Map */}
                 <div className="mb-6 overflow-hidden rounded-xl border border-border/60 bg-background/40 p-2">
-                  <div className="h-[420px] rounded-lg">
+                  {!locationRequested && (
+                    <div className="flex flex-col items-center justify-center gap-4 py-8 px-4 text-center bg-muted/30 rounded-lg mb-2">
+                      <MapPin className="h-12 w-12 text-primary" />
+                      <div>
+                        <h4 className="text-lg font-semibold mb-2">See Your Distance to Our Shop</h4>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Allow location access to see how far you are from our service area
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          setRequestLocation(true);
+                          setLocationRequested(true);
+                        }}
+                        className="gap-2 py-2"
+                        size="lg"
+                      >
+                        <MapPin className="h-4 w-4" />
+                        Show My Location on Map
+                      </Button>
+                    </div>
+                  )}
+                  <div className={`h-[420px] rounded-lg ${!locationRequested ? 'opacity-50' : ''}`}>
                     <Map
                       shopLocation={{
                         name: "Clean Tow",
@@ -147,13 +171,14 @@ const About = () => {
                         address: "Phoenix, AZ 85004",
                         phone: "+1 (623) 253-8345",
                       }}
-                      onUserLocation={(d) =>
+                      onUserLocation={(d) => {
                         setUserLoc({
                           address: d.address,
                           distanceToShopKm: d.distanceToShopKm,
                           nearestCity: d.nearestCity,
-                        })
-                      }
+                        });
+                      }}
+                      autoRequestLocation={requestLocation}
                     />
                   </div>
                 </div>

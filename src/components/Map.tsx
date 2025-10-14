@@ -29,6 +29,7 @@ type LocationDetails = {
 interface MapProps {
   shopLocation?: ShopLocation;
   onUserLocation?: (details: LocationDetails) => void;
+  autoRequestLocation?: boolean; // New prop to control automatic location request
 }
 
 const phoenixCenter: [number, number] = [-112.074, 33.4484];
@@ -56,7 +57,7 @@ const markers: Marker[] = [
   { name: "Casa Grande", coordinates: [-111.7574, 32.8795] },
 ];
 
-const Map: React.FC<MapProps> = ({ shopLocation, onUserLocation }) => {
+const Map: React.FC<MapProps> = ({ shopLocation, onUserLocation, autoRequestLocation = false }) => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -65,11 +66,13 @@ const Map: React.FC<MapProps> = ({ shopLocation, onUserLocation }) => {
   const onLocRef = useRef<typeof onUserLocation>(onUserLocation);
   const didLocateRef = useRef(false);
   const markersRef = useRef<google.maps.Marker[]>([]);
+  const autoRequestRef = useRef(autoRequestLocation);
 
   useEffect(() => {
     shopRef.current = shopLocation;
     onLocRef.current = onUserLocation;
-  }, [shopLocation, onUserLocation]);
+    autoRequestRef.current = autoRequestLocation;
+  }, [shopLocation, onUserLocation, autoRequestLocation]);
 
   // Load Google Maps API
   useEffect(() => {
@@ -301,8 +304,8 @@ const Map: React.FC<MapProps> = ({ shopLocation, onUserLocation }) => {
       });
     };
 
-    // Try to get user location
-    if (navigator.geolocation) {
+    // Only try to get user location if autoRequestLocation is true
+    if (autoRequestRef.current && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => handleLocated([pos.coords.longitude, pos.coords.latitude]),
         () => {},
