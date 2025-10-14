@@ -57,7 +57,11 @@ const markers: Marker[] = [
   { name: "Casa Grande", coordinates: [-111.7574, 32.8795] },
 ];
 
-const Map: React.FC<MapProps> = ({ shopLocation, onUserLocation, autoRequestLocation = false }) => {
+const Map: React.FC<MapProps> = ({
+  shopLocation,
+  onUserLocation,
+  autoRequestLocation = false,
+}) => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);

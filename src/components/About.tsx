@@ -145,9 +145,12 @@ const About = () => {
                     <div className="flex flex-col items-center justify-center gap-4 py-8 px-4 text-center bg-muted/30 rounded-lg mb-2">
                       <MapPin className="h-12 w-12 text-primary" />
                       <div>
-                        <h4 className="text-lg font-semibold mb-2">See Your Distance to Our Shop</h4>
+                        <h4 className="text-lg font-semibold mb-2">
+                          See Your Distance to Our Shop
+                        </h4>
                         <p className="text-sm text-muted-foreground mb-4">
-                          Allow location access to see how far you are from our service area
+                          Allow location access to see how far you are from our
+                          service area
                         </p>
                       </div>
                       <Button
@@ -163,7 +166,9 @@ const About = () => {
                       </Button>
                     </div>
                   )}
-                  <div className={`h-[420px] rounded-lg ${!locationRequested ? 'opacity-50' : ''}`}>
+                  <div
+                    className={`h-[420px] rounded-lg ${!locationRequested ? "opacity-50" : ""}`}
+                  >
                     <Map
                       shopLocation={{
                         name: "Clean Tow",
