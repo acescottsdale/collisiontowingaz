@@ -17,7 +17,11 @@ const NAV_ITEMS = [
 ] as const;
 const NAV_IDS = NAV_ITEMS.map((n) => n.href.slice(1));
 
-const Header = () => {
+type HeaderProps = {
+  city?: string;
+};
+
+const Header = (_props: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("home");
   const [isSticky, setIsSticky] = useState(false);

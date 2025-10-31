@@ -49,7 +49,11 @@ import {
   STUDENT_DISCOUNT,
 } from "./calculator/constants";
 
-function CostCalculator() {
+interface CostCalculatorProps {
+  city?: string;
+}
+
+function CostCalculator({ city = "Phoenix" }: CostCalculatorProps) {
   // Service state
   const [service, setService] = useState<ServiceType>("towing");
 
@@ -188,32 +192,30 @@ function CostCalculator() {
 
   return (
     <section
-      id="quote"
+      id="cost-calculator"
       className="py-20 bg-background relative overflow-hidden"
     >
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-10">
           <h2 className="text-4xl font-extrabold mb-3 bg-[image:_var(--gradient-hero)] bg-clip-text text-transparent tracking-tight">
-            Cost Calculator
+            Instant Towing Estimate
           </h2>
           <div className="h-1 w-24 mx-auto rounded-full bg-gradient-to-r from-primary to-primary/50 mb-3" />
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Quick estimate. Actual price may vary depending on situation and
-            required equipment.
+            Get a quick and transparent cost estimate for your needs in {city}.
+            No hidden fees.
           </p>
         </div>
 
         <Card className="max-w-4xl mx-auto bg-gradient-card shadow-card border border-primary/10 rounded-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Truck className="h-5 w-5 text-primary" /> Estimate your cost
+              <Truck className="h-5 w-5 text-primary" /> Estimate Your Cost in{" "}
+              {city}
             </CardTitle>
             <CardDescription>
               Towing: {currency(HOOK_FEE_USD)} hook fee +{" "}
-              {currency(PER_MILE_RATE_USD)} per mile (
-              {currency(PER_MILE_RATE_LARGE_VEHICLE_USD)} for large vehicles).
-              Other services: {currency(LOCKOUT_BASE_USD)} base +{" "}
-              {currency(LOCKOUT_PER_MILE_USD)}/mile.
+              {currency(PER_MILE_RATE_USD)} per mile. Other services available.
             </CardDescription>
           </CardHeader>
 
@@ -243,6 +245,7 @@ function CostCalculator() {
                   locationInfo={locationInfo}
                   onLocationInfoChange={handleLocationInfoChange}
                   onDistanceCalculated={handleDistanceCalculated}
+                  restrictToPhoenix={true}
                 />
               </div>
             </div>
@@ -264,9 +267,7 @@ function CostCalculator() {
                 onClick={() => setShowDisclaimer(true)}
               >
                 View Disclaimer
-              </Button>{" "}
-              - Other fees may apply for special equipment or complex
-              situations.
+              </Button>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2">
@@ -301,12 +302,7 @@ function CostCalculator() {
           <DialogHeader>
             <DialogTitle>Disclaimer</DialogTitle>
             <DialogDescription className="pt-5">
-              All quotes provided by Collision Towing AZ LLC are estimates only
-              and not guaranteed. Prices may vary based on location, vehicle
-              type, and specific circumstances. Final cost may be higher or
-              lower than the quoted amount. We strive to complete every job at
-              the most reasonable price possible. All emergency situations are
-              subject to an additional $100 fee.
+              All quotes are estimates. Prices may vary.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

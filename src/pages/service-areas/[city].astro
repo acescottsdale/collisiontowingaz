@@ -1,0 +1,20 @@
+---
+// Redirect legacy service-areas routes to the new city root routes
+export const prerender = true;
+
+export function getStaticPaths() {
+  const slugs = [
+    "phoenix",
+    "scottsdale",
+    "tempe",
+    "mesa",
+    "chandler",
+    "gilbert",
+  ];
+  return slugs.map((slug) => ({ params: { city: slug } }));
+}
+
+const slug = Astro.params.city?.toLowerCase() ?? "phoenix";
+// Permanent redirect to the canonical route
+Astro.redirect(`/${slug}`, 308);
+---

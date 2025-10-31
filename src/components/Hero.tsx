@@ -2,7 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Phone, Clock, MapPin } from "lucide-react";
 import HeroImage from "@/assets/images/img2.jpg";
 
-const Hero = () => {
+type HeroProps = {
+  city?: string;
+};
+
+const Hero = ({ city }: HeroProps) => {
   return (
     <section
       id="home"
@@ -29,8 +33,9 @@ const Hero = () => {
           </h1>
 
           <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl">
-            Fast, professional towing and roadside assistance across the Phoenix
-            metro area. No hidden fees, just reliable service you can trust.
+            {city
+              ? `Fast, professional towing and roadside assistance across the ${city} area. No hidden fees, just reliable service you can trust.`
+              : `Fast, professional towing and roadside assistance across the Phoenix metro area. No hidden fees, just reliable service you can trust.`}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-14">
@@ -66,7 +71,9 @@ const Hero = () => {
             <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-lg px-4 py-3 border border-white/20 w-full justify-center flex-col text-center sm:flex-row sm:justify-start sm:w-auto">
               <MapPin className="h-6 w-6 text-secondary" />
               <div>
-                <p className="font-semibold">Phoenix Metro</p>
+                <p className="font-semibold">
+                  {city ? `${city} Area` : "Phoenix Metro"}
+                </p>
                 <p className="text-sm text-white/80">Full Coverage</p>
               </div>
             </div>

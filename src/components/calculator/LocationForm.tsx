@@ -16,12 +16,14 @@ interface LocationFormProps {
   locationInfo: LocationInfo;
   onLocationInfoChange: (info: Partial<LocationInfo>) => void;
   onDistanceCalculated: (miles: string) => void;
+  restrictToPhoenix?: boolean;
 }
 
 const LocationForm: React.FC<LocationFormProps> = ({
   locationInfo,
   onLocationInfoChange,
   onDistanceCalculated,
+  restrictToPhoenix = false,
 }) => {
   const [fromSuggestions, setFromSuggestions] = useState<AddressSuggestion[]>(
     [],

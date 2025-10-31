@@ -3,7 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Truck, Fuel, LifeBuoy, Phone } from "lucide-react";
 import GarageInterior from "@/assets/images/img1.jpg";
 
-const Services = () => {
+type ServicesProps = {
+  city?: string;
+};
+
+const Services = ({ city }: ServicesProps) => {
   const services = [
     {
       icon: Truck,
@@ -67,8 +71,9 @@ const Services = () => {
           </h2>
           <div className="h-1 w-24 mx-auto rounded-full bg-gradient-to-r from-primary to-primary/50 mb-4" />
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Comprehensive towing and roadside assistance services across the
-            Phoenix metro area
+            {city
+              ? `Comprehensive towing and roadside assistance services across the ${city} area`
+              : `Comprehensive towing and roadside assistance services across the Phoenix metro area`}
           </p>
         </div>
 
@@ -114,8 +119,9 @@ const Services = () => {
               Emergency?<br></br> We're Here 24/7
             </h3>
             <p className="text-white/90 mb-6 text-lg">
-              Don't wait when you need help. Our emergency response team is
-              ready to assist you anytime, anywhere in the Phoenix metro area.
+              {city
+                ? `Don't wait when you need help. Our emergency response team is ready to assist you anytime, anywhere in the ${city} area.`
+                : `Don't wait when you need help. Our emergency response team is ready to assist you anytime, anywhere in the Phoenix metro area.`}
             </p>
             <Button
               size="lg"

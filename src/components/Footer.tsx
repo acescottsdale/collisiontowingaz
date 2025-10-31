@@ -2,7 +2,11 @@ import { Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/images/logo.png";
 
-const Footer = () => {
+type FooterProps = {
+  city?: string;
+};
+
+const Footer = ({ city }: FooterProps) => {
   const year = new Date().getFullYear();
   return (
     <footer className="py-14 bg-primary text-primary-foreground dark:text-white relative overflow-hidden">
@@ -34,8 +38,9 @@ const Footer = () => {
                 </div>
               </div>
               <p className="text-primary-foreground/90 dark:text-white/90 mb-5 max-w-[400px]">
-                Reliable towing and roadside assistance across the Phoenix
-                metro—fast, professional, and affordable.
+                {city
+                  ? `Reliable towing and roadside assistance across the ${city} area—fast, professional, and affordable.`
+                  : `Reliable towing and roadside assistance across the Phoenix metro—fast, professional, and affordable.`}
               </p>
               <div className="flex flex-row gap-3">
                 <Button
@@ -112,7 +117,7 @@ const Footer = () => {
                   <MapPin className="h-5 w-5 text-secondary" />
                   <div>
                     <p className="text-primary-foreground dark:text-white">
-                      Phoenix Metro Area
+                      {city ? `${city} Area` : "Phoenix Metro Area"}
                     </p>
                     <p className="text-sm text-primary-foreground/70 dark:text-white/70">
                       Full Coverage

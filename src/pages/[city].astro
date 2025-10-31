@@ -1,0 +1,51 @@
+---
+import ServiceAreaLayout from "@/layouts/service-area/Layout.astro";
+import ServiceAreaHero from "@/components/service-area/Hero.astro";
+import ServiceAreaServices from "@/components/service-area/Services.astro";
+import CostCalculator from "@/components/CostCalculator";
+import Contact from "@/components/Contact";
+import StickyCallButton from "@/components/StickyCallButton";
+
+export const prerender = true;
+
+const supported = new Map<string, string>([
+  ["phoenix", "Phoenix"],
+  ["scottsdale", "Scottsdale"],
+  ["tempe", "Tempe"],
+  ["mesa", "Mesa"],
+  ["chandler", "Chandler"],
+  ["gilbert", "Gilbert"],
+]);
+
+// Generate static paths for all supported service-area pages
+export function getStaticPaths() {
+  const slugs = [
+    "phoenix",
+    "scottsdale",
+    "tempe",
+    "mesa",
+    "chandler",
+    "gilbert",
+  ];
+  return slugs.map((slug) => ({ params: { city: slug } }));
+}
+
+const slug = Astro.params.city?.toLowerCase() ?? "phoenix";
+const city = supported.get(slug) ?? "Phoenix";
+const seoData = {
+  title: `Towing Service in ${city}, AZ | Collision Towing AZ`,
+  description: `Your local ${city} towing service. 24/7 emergency towing and roadside assistance in ${city}, Arizona. Get a free estimate now.`,
+  keywords: `towing service ${city}, ${city} towing, emergency towing ${city}, roadside assistance ${city}, tow truck ${city}`,
+  canonicalUrl: `https://collisiontowingaz.com/${slug}`,
+};
+---
+
+<ServiceAreaLayout {...seoData} city={city}>
+  <div class="min-h-screen overflow-hidden">
+    <ServiceAreaHero city={city} />
+    <ServiceAreaServices city={city} />
+    <CostCalculator client:load city={city} />
+    <Contact client:load city={city} />
+    <StickyCallButton client:load />
+  </div>
+</ServiceAreaLayout>
