@@ -214,6 +214,20 @@ const finalStructuredData = structuredData || structuredDataDefaults;
         f.parentNode.insertBefore(j, f);
       })(window, document, "script", "dataLayer", "GTM-54ZJLW4K");
     </script>
+    <!-- Google tag (gtag.js) -->
+    <script
+      is:inline
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=AW-17421864614"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "AW-17421864614");
+    </script>
   </head>
   <body>
     <Header client:load city={city} />
